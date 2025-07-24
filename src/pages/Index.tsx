@@ -13,6 +13,11 @@ import { Enhanced3DEffects } from '@/components/Enhanced3DEffects';
 import { VoiceNavigation } from '@/components/VoiceNavigation';
 import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
+import { StunningLightningBackground } from '@/components/StunningLightningBackground';
+import { AdaptiveCursor } from '@/components/AdaptiveCursor';
+import { MemoryEditModal } from '@/components/MemoryEditModal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Edit, Heart, MapPin, Calendar } from 'lucide-react';
 
 const Index = () => {
   const [currentTheme, setCurrentTheme] = useState<'morning' | 'evening' | 'night'>('morning');
@@ -24,6 +29,37 @@ const Index = () => {
   const [beatIntensity, setBeatIntensity] = useState(0);
   const [biometricData, setBiometricData] = useState({});
   const [isVoiceTriggeredChat, setIsVoiceTriggeredChat] = useState(false);
+  const [selectedMemory, setSelectedMemory] = useState<any>(null);
+  const [isMemoryModalOpen, setIsMemoryModalOpen] = useState(false);
+  const [memories, setMemories] = useState([
+    {
+      id: '1',
+      title: 'Our First Date',
+      description: 'The most magical evening with AKSHITA, where everything began...',
+      date: '2024-01-15',
+      location: 'Sunset Café',
+      photos: ['/api/placeholder/300/200', '/api/placeholder/300/200'],
+      tags: ['romantic', 'first-date', 'special']
+    },
+    {
+      id: '2', 
+      title: 'Dancing Under Stars',
+      description: 'AKSHITA looked absolutely stunning as we danced under the starlit sky...',
+      date: '2024-02-14',
+      location: 'Rose Garden',
+      photos: ['/api/placeholder/300/200'],
+      tags: ['dance', 'stars', 'valentine']
+    },
+    {
+      id: '3',
+      title: 'Beach Sunrise',
+      description: 'Watching the sunrise with AKSHITA, the most peaceful moment of my life...',
+      date: '2024-03-20',
+      location: 'Golden Beach',
+      photos: ['/api/placeholder/300/200', '/api/placeholder/300/200', '/api/placeholder/300/200'],
+      tags: ['sunrise', 'beach', 'peaceful']
+    }
+  ]);
 
   // Mouse tracking for particle system
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -155,6 +191,24 @@ const Index = () => {
     console.log('Updated user preferences:', preferences);
   };
 
+  // Memory editing handlers
+  const handleEditMemory = (memory: any) => {
+    setSelectedMemory(memory);
+    setIsMemoryModalOpen(true);
+  };
+
+  const handleSaveMemory = (updatedMemory: any) => {
+    setMemories(prev => prev.map(m => m.id === updatedMemory.id ? updatedMemory : m));
+    setIsMemoryModalOpen(false);
+    setSelectedMemory(null);
+  };
+
+  const handleDeleteMemory = (memoryId: string) => {
+    setMemories(prev => prev.filter(m => m.id !== memoryId));
+    setIsMemoryModalOpen(false);
+    setSelectedMemory(null);
+  };
+
   // Create floating ambient elements
   useEffect(() => {
     const createAmbientElement = () => {
@@ -185,7 +239,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
-            {/* The HeroSection now includes its own AkshitaDynamicBackground */}
+      {/* Adaptive Cursor - Global */}
+      <AdaptiveCursor />
+
+      {/* The HeroSection now includes its own AkshitaDynamicBackground */}
       {/* Keep Enhanced3DEffects for other sections if needed */}
       <Enhanced3DEffects
         theme={currentTheme}
@@ -296,33 +353,198 @@ const Index = () => {
           />
         </div>
 
-        {/* Coming Soon Sections */}
-        <div id="memories" className="min-h-screen flex items-center justify-center">
-          <div className="glass-romantic rounded-3xl p-12 text-center max-w-2xl mx-4">
-            <div className="text-6xl mb-6">📸</div>
-            <h2 className="text-3xl font-romantic font-bold text-romantic mb-4">
-              Photo Gallery
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Our beautiful memories captured in time. Upload and organize photos with AI-powered recognition.
-            </p>
-            <div className="glass rounded-2xl p-6">
-              <p className="text-sm text-romantic">Coming soon with drag-and-drop uploads! 💫</p>
+        {/* Our Beautiful Memories Section with Lightning Background */}
+        <div id="memories" className="min-h-screen relative" data-background="dark">
+          {/* Lightning Background */}
+          <StunningLightningBackground 
+            intensity="medium"
+            isActive={true}
+            className="lightning-background"
+          />
+          
+          <div className="relative z-10 flex items-center justify-center min-h-screen p-8">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Header */}
+              <motion.div
+                className="text-center mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h2 className="text-5xl md:text-6xl font-romantic font-bold bg-gradient-to-r from-white via-blue-200 to-cyan-300 bg-clip-text text-transparent mb-4">
+                  Our Beautiful Memories
+                </h2>
+                <p className="text-xl text-white/80 max-w-2xl mx-auto">
+                  Every precious moment with AKSHITA, captured and preserved forever
+                </p>
+              </motion.div>
+
+              {/* Memory Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {memories.map((memory, index) => (
+                  <motion.div
+                    key={memory.id}
+                    className="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.6 }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                  >
+                    {/* Edit Button */}
+                    <motion.button
+                      onClick={() => handleEditMemory(memory)}
+                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 transition-all duration-300"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Edit className="w-4 h-4 text-white" />
+                    </motion.button>
+
+                    {/* Memory Photos */}
+                    <div className="relative mb-4 overflow-hidden rounded-xl">
+                      <img
+                        src={memory.photos[0]}
+                        alt={memory.title}
+                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                      {memory.photos.length > 1 && (
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                          +{memory.photos.length - 1}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Memory Content */}
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-semibold text-white">{memory.title}</h3>
+                      <p className="text-white/70 text-sm line-clamp-2">{memory.description}</p>
+                      
+                      <div className="flex items-center gap-4 text-white/60 text-xs">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(memory.date).toLocaleDateString()}
+                        </div>
+                        {memory.location && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {memory.location}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1">
+                        {memory.tags?.slice(0, 3).map((tag, tagIndex) => (
+                          <span
+                            key={tagIndex}
+                            className="px-2 py-1 bg-cyan-400/20 text-cyan-300 text-xs rounded-full border border-cyan-400/30"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Heart Icon */}
+                    <motion.div
+                      className="absolute bottom-4 right-4 text-pink-400"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                    >
+                      <Heart className="w-5 h-5 fill-current" />
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Add New Memory Button */}
+              <motion.div
+                className="text-center mt-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                <button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+                  Create New Memory
+                </button>
+              </motion.div>
             </div>
           </div>
         </div>
 
-        <div id="music" className="min-h-screen flex items-center justify-center">
-          <div className="glass-gold rounded-3xl p-12 text-center max-w-2xl mx-4">
-            <div className="text-6xl mb-6">🎵</div>
-            <h2 className="text-3xl font-romantic font-bold text-gold-deep mb-4">
-              Our Soundtrack
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Every song that reminds me of you. Smart playlists that adapt to your mood and the time of day.
-            </p>
-            <div className="glass rounded-2xl p-6">
-              <p className="text-sm text-gold-deep">Spotify integration coming soon! 🎶</p>
+        {/* Our Romantic Songs Section with Lightning Background */}
+        <div id="music" className="min-h-screen relative" data-background="dark">
+          {/* Lightning Background */}
+          <StunningLightningBackground 
+            intensity="high"
+            color="#ff6b9d"
+            isActive={true}
+            className="lightning-background"
+          />
+          
+          <div className="relative z-10 flex items-center justify-center min-h-screen p-8">
+            <div className="max-w-4xl mx-auto text-center">
+              {/* Section Header */}
+              <motion.div
+                className="mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h2 className="text-5xl md:text-6xl font-romantic font-bold bg-gradient-to-r from-pink-200 via-purple-200 to-indigo-300 bg-clip-text text-transparent mb-4">
+                  Our Romantic Songs
+                </h2>
+                <p className="text-xl text-white/80 max-w-2xl mx-auto">
+                  Every melody that reminds me of AKSHITA, every beat that makes my heart skip
+                </p>
+              </motion.div>
+
+              {/* Music Player Mockup */}
+              <motion.div
+                className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 max-w-2xl mx-auto"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              >
+                <div className="text-6xl mb-6">🎵</div>
+                <h3 className="text-2xl font-semibold text-white mb-4">AKSHITA's Playlist</h3>
+                
+                {/* Mock Song List */}
+                <div className="space-y-3 mb-8">
+                  {[
+                    { title: "Perfect", artist: "Ed Sheeran", duration: "4:23" },
+                    { title: "All of Me", artist: "John Legend", duration: "4:29" },
+                    { title: "Thinking Out Loud", artist: "Ed Sheeran", duration: "4:41" }
+                  ].map((song, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center justify-between bg-white/5 rounded-lg p-3 hover:bg-white/10 transition-colors"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + index * 0.1 }}
+                    >
+                      <div className="text-left">
+                        <div className="text-white font-medium">{song.title}</div>
+                        <div className="text-white/60 text-sm">{song.artist}</div>
+                      </div>
+                      <div className="text-white/60 text-sm">{song.duration}</div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Spotify Integration Notice */}
+                <motion.div
+                  className="bg-gradient-to-r from-green-500/20 to-green-400/20 border border-green-400/30 rounded-xl p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <h4 className="text-green-300 font-semibold mb-2">🎶 Spotify Integration Coming Soon!</h4>
+                  <p className="text-green-200/80 text-sm">
+                    Connect your Spotify account to play our special songs together
+                  </p>
+                </motion.div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -361,6 +583,18 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Memory Edit Modal */}
+      <MemoryEditModal
+        memory={selectedMemory}
+        isOpen={isMemoryModalOpen}
+        onClose={() => {
+          setIsMemoryModalOpen(false);
+          setSelectedMemory(null);
+        }}
+        onSave={handleSaveMemory}
+        onDelete={handleDeleteMemory}
+      />
     </div>
   );
 };

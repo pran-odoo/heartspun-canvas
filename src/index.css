@@ -884,4 +884,77 @@ body * {
     perspective: 1000px;
     transform: translateZ(0);
   }
+
+  /* === ADAPTIVE CURSOR STYLES === */
+  .adaptive-cursor-visible * {
+    cursor: none !important;
+  }
+
+  /* Lightning Background Optimization */
+  .lightning-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    contain: layout style paint;
+    will-change: transform;
+  }
+
+  /* Memory Card Animations */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Enhanced hover effects for memory cards */
+  .memory-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  .memory-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Lightning effect text styling */
+  .lightning-text {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+
+  /* Smooth section transitions */
+  .section-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .section-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  /* Enhanced Lightning section styling */
+  [data-background="dark"] {
+    background: linear-gradient(135deg, #000000 0%, #001122 100%);
+  }
+
+  /* Memory card grid responsive layout */
+  @media (max-width: 768px) {
+    .memory-card {
+      padding: 1rem;
+    }
+    
+    .memory-card:hover {
+      transform: translateY(-5px) scale(1.01);
+    }
+  }
 }

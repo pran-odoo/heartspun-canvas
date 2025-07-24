@@ -22,6 +22,7 @@ const Index = () => {
   const [currentMood, setCurrentMood] = useState('romantic');
   const [beatIntensity, setBeatIntensity] = useState(0);
   const [biometricData, setBiometricData] = useState({});
+  const [isVoiceTriggeredChat, setIsVoiceTriggeredChat] = useState(false);
 
   // Mouse tracking for particle system
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -50,6 +51,46 @@ const Index = () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
   }, [getTimeBasedTheme, handleMouseMove]);
+
+  // Enhanced voice command handler
+  const handleVoiceCommand = useCallback((command: string) => {
+    console.log('Voice command received:', command);
+    
+    // Handle theme commands
+    if (command.startsWith('theme-')) {
+      const theme = command.replace('theme-', '') as 'morning' | 'evening' | 'night';
+      handleThemeChange(theme);
+      return;
+    }
+
+    // Handle special commands
+    switch (command) {
+      case 'love-response':
+        // Could trigger a special animation or response
+        console.log('💕 Love response triggered');
+        break;
+      case 'compliment-response':
+        console.log('🌟 Compliment response triggered');
+        break;
+      case 'nice-message':
+        console.log('✨ Nice message triggered');
+        break;
+      case 'help':
+        console.log('❓ Help triggered');
+        break;
+      default:
+        console.log('Unknown voice command:', command);
+    }
+  }, []);
+
+  // Handle chat opening from voice commands
+  const handleVoiceChatOpen = useCallback(() => {
+    setIsVoiceTriggeredChat(true);
+    // Reset the trigger after a short delay
+    setTimeout(() => {
+      setIsVoiceTriggeredChat(false);
+    }, 1000);
+  }, []);
 
   // Theme change handler with smooth transitions
   const handleThemeChange = (theme: 'morning' | 'evening' | 'night') => {
@@ -176,18 +217,20 @@ const Index = () => {
         mousePosition={mousePosition}
       />
       
-      {/* AI Companion Chatbot */}
+            {/* AI Companion Chatbot */}
       <AICompanion
         theme={currentTheme}
         userName="Beautiful"
+        isVoiceTriggered={isVoiceTriggeredChat}
+        onVoiceCommand={handleVoiceCommand}
       />
-      
+
       {/* Advanced Music System */}
       <MusicSystem
         theme={currentTheme}
         onMoodChange={handleMoodChange}
       />
-      
+
       {/* Biometric Awareness */}
       <BiometricAwareness
         theme={currentTheme}
@@ -197,7 +240,8 @@ const Index = () => {
       {/* Voice Navigation */}
       <VoiceNavigation
         onNavigate={handleNavigation}
-        onCommand={(cmd) => console.log('Voice command:', cmd)}
+        onCommand={handleVoiceCommand}
+        onChatOpen={handleVoiceChatOpen}
       />
 
       {/* Surprise Generator */}

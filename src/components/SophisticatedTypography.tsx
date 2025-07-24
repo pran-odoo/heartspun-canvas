@@ -1,470 +1,349 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-
-// Error Boundary for SophisticatedText - exported for external use
-export class SophisticatedTextErrorBoundary extends React.Component<
-  { children: React.ReactNode; fallback?: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: any) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI
-    console.error('SophisticatedText Error:', error);
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('SophisticatedText Error Details:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="text-2xl text-gray-800 font-serif">
-          {/* Fallback text that matches the sophisticated theme */}
-          Loading...
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
+import React from 'react';
+import { motion } from 'framer-motion';
 
 interface SophisticatedTextProps {
   children: React.ReactNode;
-  variant: 'hero' | 'akshita-elegant' | 'sophisticated-subtitle' | 'romantic-script' | 'luxury-body';
-  className?: string;
+  variant: 'akshita-elegant' | 'romantic-message' | 'elegant-subtitle' | 'luxury-caption';
   delay?: number;
-  isVisible?: boolean;
-  animate?: boolean;
+  className?: string;
+  theme?: 'morning' | 'evening' | 'night';
 }
 
 interface ElegantTitleProps {
-  text: string;
+  children: React.ReactNode;
+  level?: 1 | 2 | 3;
   className?: string;
-  glowEffect?: boolean;
-  letterSpacing?: 'tight' | 'normal' | 'wide' | 'wider';
+  theme?: 'morning' | 'evening' | 'night';
 }
 
-const SOPHISTICATED_FONTS = {
-  hero: '"Playfair Display", serif',
-  akshitaElegant: '"Playfair Display", serif',
-  subtitle: '"Inter", sans-serif',
-  script: '"Dancing Script", cursive',
-  luxury: '"Inter", sans-serif',
-};
+interface LuxuryParagraphProps {
+  children: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+  theme?: 'morning' | 'evening' | 'night';
+}
 
+interface SophisticatedQuoteProps {
+  text: string;
+  author?: string;
+  className?: string;
+  theme?: 'morning' | 'evening' | 'night';
+}
+
+// COHESIVE COLOR SCHEMES FOR PERFECT HARMONY
 const SOPHISTICATED_COLORS = {
-  light: {
-    primary: '#2C1810',
-    secondary: '#4A2C17', 
-    accent: '#8B4513',
-    gold: '#B8860B',
-    platinum: '#E5E4E2',
-    rose: '#C08497'
+  morning: {
+    akshita: {
+      primary: '#ffffff',
+      glow: '#87ceeb',
+      shadow: '0 0 30px rgba(135, 206, 235, 0.4), 0 0 60px rgba(135, 206, 235, 0.2)',
+      gradient: 'linear-gradient(135deg, #ffffff 0%, #e8f4ff 50%, #d6ebff 100%)'
+    },
+    text: {
+      primary: '#f0f8ff',
+      secondary: '#e0ecff',
+      accent: '#d6ebff',
+      shadow: '0 2px 20px rgba(135, 206, 235, 0.3)'
+    }
   },
-  dark: {
-    primary: '#F5F5DC',
-    secondary: '#E6E6FA',
-    accent: '#DDA0DD',
-    gold: '#FFD700',
-    platinum: '#F0F0F0',
-    rose: '#F0C0C0'
+  evening: {
+    akshita: {
+      primary: '#ffffff',
+      glow: '#dda0dd',
+      shadow: '0 0 30px rgba(221, 160, 221, 0.4), 0 0 60px rgba(221, 160, 221, 0.2)',
+      gradient: 'linear-gradient(135deg, #ffffff 0%, #f0e8ff 50%, #e6d6ff 100%)'
+    },
+    text: {
+      primary: '#f8f0ff',
+      secondary: '#f0e8ff',
+      accent: '#e6d6ff',
+      shadow: '0 2px 20px rgba(221, 160, 221, 0.3)'
+    }
+  },
+  night: {
+    akshita: {
+      primary: '#ffffff',
+      glow: '#6495ed',
+      shadow: '0 0 30px rgba(100, 149, 237, 0.4), 0 0 60px rgba(100, 149, 237, 0.2)',
+      gradient: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #e0ecff 100%)'
+    },
+    text: {
+      primary: '#f8faff',
+      secondary: '#f0f8ff',
+      accent: '#e0ecff',
+      shadow: '0 2px 20px rgba(100, 149, 237, 0.3)'
+    }
   }
 };
 
-// Internal component without error boundary
-const SophisticatedTextInternal: React.FC<SophisticatedTextProps> = ({
+const textVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 30,
+    scale: 0.95
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 20,
+      mass: 1
+    }
+  }
+};
+
+const glowVariants = {
+  idle: {
+    textShadow: (colors: any) => colors.akshita.shadow,
+    scale: 1
+  },
+  hover: {
+    textShadow: (colors: any) => `${colors.akshita.shadow}, 0 0 100px ${colors.akshita.glow}`,
+    scale: 1.02,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  }
+};
+
+const breathingVariants = {
+  breathe: {
+    scale: [1, 1.02, 1],
+    textShadow: [
+      (colors: any) => colors.akshita.shadow,
+      (colors: any) => `${colors.akshita.shadow}, 0 0 80px ${colors.akshita.glow}`,
+      (colors: any) => colors.akshita.shadow
+    ],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
   children,
   variant,
-  className = '',
   delay = 0,
-  isVisible = true,
-  animate = true
+  className = '',
+  theme = 'night'
 }) => {
-  const [isRevealed, setIsRevealed] = useState(!animate);
-  const textRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (animate && isVisible) {
-      const timer = setTimeout(() => {
-        setIsRevealed(true);
-      }, delay);
-      return () => clearTimeout(timer);
-    }
-  }, [animate, isVisible, delay]);
+  const colors = SOPHISTICATED_COLORS[theme];
 
   const getVariantStyles = () => {
     switch (variant) {
-      case 'hero':
-        return {
-          fontSize: 'clamp(3rem, 8vw, 7rem)',
-          fontWeight: '400',
-          lineHeight: '1.1',
-          letterSpacing: '-0.02em',
-          fontFamily: SOPHISTICATED_FONTS.hero,
-          background: 'linear-gradient(135deg, #2C1810 0%, #8B4513 50%, #2C1810 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          textShadow: '0 4px 12px rgba(44, 24, 16, 0.3)',
-        };
       case 'akshita-elegant':
         return {
-          fontSize: 'clamp(4rem, 12vw, 9rem)',
-          fontWeight: '700',
-          lineHeight: '0.9',
-          letterSpacing: '0.05em',
-          fontFamily: SOPHISTICATED_FONTS.akshitaElegant,
-          background: 'linear-gradient(45deg, #B8860B 0%, #FFD700 25%, #F0E68C 50%, #FFD700 75%, #B8860B 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          backgroundSize: '300% 300%',
-          filter: 'drop-shadow(0 6px 12px rgba(184, 134, 11, 0.4))',
-        };
-      case 'sophisticated-subtitle':
-        return {
-          fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+          fontSize: 'clamp(3rem, 8vw, 6rem)',
           fontWeight: '300',
-          lineHeight: '1.4',
-          letterSpacing: '0.02em',
-          fontFamily: SOPHISTICATED_FONTS.subtitle,
-          color: '#4A2C17',
-          textShadow: '0 2px 6px rgba(74, 44, 23, 0.2)',
-        };
-      case 'romantic-script':
-        return {
-          fontSize: 'clamp(1.8rem, 5vw, 3rem)',
-          fontWeight: '400',
-          lineHeight: '1.3',
-          letterSpacing: '0.01em',
-          fontFamily: SOPHISTICATED_FONTS.script,
-          background: 'linear-gradient(135deg, #C08497 0%, #D2B48C 100%)',
+          fontFamily: "'Playfair Display', serif",
+          letterSpacing: '0.05em',
+          background: colors.akshita.gradient,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          filter: 'drop-shadow(0 3px 6px rgba(192, 132, 151, 0.3))',
+          filter: `drop-shadow(${colors.akshita.shadow})`,
+          lineHeight: 1.1
         };
-      case 'luxury-body':
+      case 'romantic-message':
         return {
-          fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)',
+          fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
           fontWeight: '400',
-          lineHeight: '1.6',
-          letterSpacing: '0.01em',
-          fontFamily: SOPHISTICATED_FONTS.luxury,
-          color: '#2C1810',
-          opacity: 0.9,
+          fontFamily: "'Dancing Script', cursive",
+          color: colors.text.primary,
+          textShadow: colors.text.shadow,
+          lineHeight: 1.6
+        };
+      case 'elegant-subtitle':
+        return {
+          fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+          fontWeight: '300',
+          fontFamily: "'Playfair Display', serif",
+          color: colors.text.secondary,
+          textShadow: colors.text.shadow,
+          letterSpacing: '0.02em'
+        };
+      case 'luxury-caption':
+        return {
+          fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
+          fontWeight: '400',
+          fontFamily: "'Inter', sans-serif",
+          color: colors.text.accent,
+          textShadow: colors.text.shadow,
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase' as const
         };
       default:
         return {};
     }
   };
 
-  const containerVariants = {
-    hidden: {
-      opacity: 0,
-      y: variant === 'akshita-elegant' ? 100 : 50,
-      scale: variant === 'akshita-elegant' ? 0.8 : 0.95,
-      rotateX: variant === 'hero' ? -15 : 0,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      rotateX: 0,
-      transition: {
-        duration: variant === 'akshita-elegant' ? 1.2 : 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94],
-        delay
-      }
-    }
-  };
-
   return (
     <motion.div
-      ref={textRef}
-      className={`sophisticated-text ${className}`}
-      style={getVariantStyles()}
-      variants={animate ? containerVariants : undefined}
-      initial={animate ? "hidden" : undefined}
-      animate={animate && isRevealed ? "visible" : undefined}
+      variants={textVariants}
+      initial="hidden"
+      animate="visible"
+      transition={{ delay }}
+      className={className}
     >
-      {/* Elegant background glow for AKSHITA */}
-      {variant === 'akshita-elegant' && (
+      {variant === 'akshita-elegant' ? (
+        <motion.h1
+          style={getVariantStyles()}
+          variants={breathingVariants}
+          animate="breathe"
+          whileHover="hover"
+          className="select-none cursor-default"
+        >
+          {children}
+        </motion.h1>
+      ) : (
         <motion.div
-          className="absolute inset-0 -z-10 rounded-2xl"
-          style={{
-            background: 'radial-gradient(ellipse, rgba(184, 134, 11, 0.15), transparent 70%)',
-            filter: 'blur(20px)',
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+          style={getVariantStyles()}
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+        >
+          {children}
+        </motion.div>
       )}
-      
-      {children}
     </motion.div>
   );
 };
 
-// Exported component with error boundary protection
-export const SophisticatedText: React.FC<SophisticatedTextProps> = (props) => {
-  return (
-    <SophisticatedTextErrorBoundary
-      fallback={
-        <div 
-          className={`text-2xl font-serif ${props.className || ''}`}
-          style={{ 
-            fontFamily: '"Playfair Display", serif',
-            color: '#2C1810'
-          }}
-        >
-          {props.children}
-        </div>
-      }
-    >
-      <SophisticatedTextInternal {...props} />
-    </SophisticatedTextErrorBoundary>
-  );
-};
-
 export const ElegantTitle: React.FC<ElegantTitleProps> = ({
-  text,
+  children,
+  level = 2,
   className = '',
-  glowEffect = false,
-  letterSpacing = 'normal'
+  theme = 'night'
 }) => {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
+  const colors = SOPHISTICATED_COLORS[theme];
+  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
 
-  // Sophisticated typewriter effect
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timer = setTimeout(() => {
-        setDisplayText(text.slice(0, currentIndex + 1));
-        setCurrentIndex(currentIndex + 1);
-      }, 120);
-      return () => clearTimeout(timer);
-    } else {
-      setIsComplete(true);
-    }
-  }, [currentIndex, text]);
-
-  const getLetterSpacing = () => {
-    switch (letterSpacing) {
-      case 'tight': return '-0.05em';
-      case 'normal': return '0';
-      case 'wide': return '0.05em';
-      case 'wider': return '0.1em';
-      default: return '0';
-    }
+  const titleStyles = {
+    fontSize: level === 1 ? 'clamp(2.5rem, 6vw, 4rem)' : 
+               level === 2 ? 'clamp(2rem, 5vw, 3rem)' : 
+               'clamp(1.5rem, 4vw, 2rem)',
+    fontWeight: '300',
+    fontFamily: "'Playfair Display', serif",
+    color: colors.text.primary,
+    textShadow: colors.text.shadow,
+    letterSpacing: '0.02em',
+    lineHeight: 1.2
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <motion.h1
-        className="elegant-title"
-        style={{
-          fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-          fontWeight: '300',
-          lineHeight: '1.1',
-          letterSpacing: getLetterSpacing(),
-          fontFamily: '"Playfair Display", serif',
-          background: 'linear-gradient(135deg, #2C1810 0%, #8B4513 50%, #B8860B 75%, #2C1810 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          textShadow: glowEffect ? '0 0 30px rgba(139, 69, 19, 0.5)' : 'none',
-        }}
-        animate={{
-          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      >
-        {displayText.split('').map((letter, index) => (
-          <motion.span
-            key={index}
-            className="inline-block"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: index * 0.1,
-              duration: 0.6,
-              ease: [0.25, 0.46, 0.45, 0.94]
-            }}
-            whileHover={{
-              scale: 1.1,
-              color: '#B8860B',
-              textShadow: '0 0 20px rgba(184, 134, 11, 0.8)',
-            }}
-          >
-            {letter === ' ' ? '\u00A0' : letter}
-          </motion.span>
-        ))}
-      </motion.h1>
-      
-      {/* Elegant underline effect */}
-      {isComplete && (
-        <motion.div
-          className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent rounded-full"
-          style={{
-            background: 'linear-gradient(90deg, transparent, #B8860B, transparent)',
-          }}
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: '100%', opacity: 1 }}
-          transition={{ delay: 1, duration: 1.5, ease: "easeOut" }}
-        />
-      )}
-    </div>
+    <motion.div
+      variants={textVariants}
+      initial="hidden"
+      animate="visible"
+      className={className}
+    >
+      <Tag style={titleStyles}>
+        {children}
+      </Tag>
+    </motion.div>
   );
 };
-
-// Sophisticated paragraph component
-interface LuxuryParagraphProps {
-  children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
-  weight?: 'light' | 'normal' | 'medium';
-  className?: string;
-}
 
 export const LuxuryParagraph: React.FC<LuxuryParagraphProps> = ({
   children,
   size = 'md',
-  weight = 'normal',
-  className = ''
+  className = '',
+  theme = 'night'
 }) => {
-  const getSizeStyles = () => {
-    switch (size) {
-      case 'sm': return { fontSize: 'clamp(0.9rem, 2vw, 1.1rem)' };
-      case 'md': return { fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)' };
-      case 'lg': return { fontSize: 'clamp(1.3rem, 3vw, 1.8rem)' };
-      default: return {};
-    }
+  const colors = SOPHISTICATED_COLORS[theme];
+
+  const sizeStyles = {
+    sm: { fontSize: 'clamp(0.9rem, 2vw, 1rem)' },
+    md: { fontSize: 'clamp(1rem, 2.5vw, 1.2rem)' },
+    lg: { fontSize: 'clamp(1.2rem, 3vw, 1.4rem)' },
+    xl: { fontSize: 'clamp(1.4rem, 3.5vw, 1.6rem)' }
   };
 
-  const getWeightStyles = () => {
-    switch (weight) {
-      case 'light': return { fontWeight: '300' };
-      case 'normal': return { fontWeight: '400' };
-      case 'medium': return { fontWeight: '500' };
-      default: return {};
-    }
+  const paragraphStyles = {
+    ...sizeStyles[size],
+    fontWeight: '400',
+    fontFamily: "'Inter', sans-serif",
+    color: colors.text.primary,
+    textShadow: colors.text.shadow,
+    lineHeight: 1.7,
+    letterSpacing: '0.01em'
   };
 
   return (
     <motion.p
-      className={`luxury-paragraph ${className}`}
-      style={{
-        ...getSizeStyles(),
-        ...getWeightStyles(),
-        lineHeight: '1.7',
-        letterSpacing: '0.01em',
-        fontFamily: '"Inter", sans-serif',
-        color: '#4A2C17',
-        opacity: 0.9,
+      variants={textVariants}
+      initial="hidden"
+      animate="visible"
+      style={paragraphStyles}
+      className={className}
+      whileHover={{ 
+        color: colors.text.secondary,
+        transition: { duration: 0.2 }
       }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 0.9, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       {children}
     </motion.p>
   );
 };
 
-// Elegant quote component
-interface SophisticatedQuoteProps {
-  text: string;
-  author?: string;
-  className?: string;
-}
-
 export const SophisticatedQuote: React.FC<SophisticatedQuoteProps> = ({
   text,
   author,
-  className = ''
+  className = '',
+  theme = 'night'
 }) => {
+  const colors = SOPHISTICATED_COLORS[theme];
+
+  const quoteStyles = {
+    fontSize: 'clamp(1.3rem, 3.5vw, 1.8rem)',
+    fontWeight: '300',
+    fontFamily: "'Playfair Display', serif",
+    color: colors.text.primary,
+    textShadow: colors.text.shadow,
+    fontStyle: 'italic',
+    lineHeight: 1.6,
+    letterSpacing: '0.01em'
+  };
+
+  const authorStyles = {
+    fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+    fontWeight: '400',
+    fontFamily: "'Inter', sans-serif",
+    color: colors.text.accent,
+    textShadow: colors.text.shadow,
+    letterSpacing: '0.05em',
+    marginTop: '1rem'
+  };
+
   return (
     <motion.blockquote
-      className={`sophisticated-quote ${className}`}
-      style={{
-        fontSize: 'clamp(1.4rem, 3.5vw, 2.2rem)',
-        fontWeight: '300',
-        lineHeight: '1.4',
-        fontStyle: 'italic',
-        fontFamily: '"Playfair Display", serif',
-        color: '#8B4513',
-        textAlign: 'center',
-        position: 'relative',
-        padding: '2rem',
-      }}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
+      variants={textVariants}
+      initial="hidden"
+      animate="visible"
+      className={`text-center ${className}`}
     >
-      {/* Elegant quotation marks */}
-      <span 
-        style={{
-          fontSize: '4rem',
-          color: '#B8860B',
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          lineHeight: '1',
-          opacity: 0.3,
+      <motion.p
+        style={quoteStyles}
+        whileHover={{ 
+          scale: 1.02,
+          color: colors.text.secondary,
+          transition: { duration: 0.3 }
         }}
       >
-        "
-      </span>
-      
-      {text}
-      
-      <span 
-        style={{
-          fontSize: '4rem',
-          color: '#B8860B',
-          position: 'absolute',
-          bottom: '0',
-          right: '0',
-          lineHeight: '1',
-          opacity: 0.3,
-        }}
-      >
-        "
-      </span>
-      
+        "{text}"
+      </motion.p>
       {author && (
         <motion.cite
-          style={{
-            display: 'block',
-            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            fontWeight: '400',
-            fontStyle: 'normal',
-            marginTop: '1rem',
-            color: '#4A2C17',
-            opacity: 0.8,
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.8 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
+          style={authorStyles}
+          className="block not-italic"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
         >
           — {author}
         </motion.cite>

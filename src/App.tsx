@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AnimatePresence } from "framer-motion";
+import { TabSwitchingFix } from "./components/TabSwitchingFix";
 import Index from "./pages/Index";
 import Memories from "./pages/Memories";
 import Music from "./pages/Music";
@@ -47,6 +48,7 @@ const App = () => (
       disableTransitionOnChange
     >
       <TooltipProvider>
+        <TabSwitchingFix />
         <Toaster />
         <Sonner />
         <BrowserRouter>

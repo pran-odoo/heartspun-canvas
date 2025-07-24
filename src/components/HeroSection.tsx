@@ -1,13 +1,30 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AkshitaAnimatedText, AkshitaTextRotator, AkshitaHighlightText } from './AkshitaAnimatedText';
+import { SophisticatedGalaxyBackground } from './SophisticatedGalaxyBackground';
+import { SophisticatedText, ElegantTitle, LuxuryParagraph, SophisticatedQuote } from './SophisticatedTypography';
 import { AkshitaMagicalButton, AkshitaFloatingButton } from './AkshitaMagicalButtons';
-import { AkshitaDynamicBackground } from './AkshitaDynamicBackground';
 
 interface HeroSectionProps {
   theme: 'morning' | 'evening' | 'night';
   onNavigate: (section: string) => void;
 }
+
+// Sophisticated message collections for mature audience
+const sophisticatedMessages = [
+  "Under the Stars with AKSHITA",
+  "Eternal Moments with AKSHITA", 
+  "Love's Symphony with AKSHITA",
+  "Timeless Beauty, AKSHITA",
+  "Forever Yours, AKSHITA"
+];
+
+const elegantNotifications = [
+  "You are my greatest inspiration, AKSHITA",
+  "In your eyes, I find my home, AKSHITA", 
+  "Every heartbeat speaks your name, AKSHITA",
+  "You make every moment extraordinary, AKSHITA",
+  "My heart belongs to you, AKSHITA"
+];
 
 const romanticMessages = [
   "Under the Stars with AKSHITA 🌟",
@@ -38,22 +55,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showSpecialEffect, setShowSpecialEffect] = useState(false);
   const [interactionCount, setInteractionCount] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   // Track mouse for interactive effects
   const handleMouseMove = useCallback((e: MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
   }, []);
 
-  // Update time for dynamic greetings
+  // Update time for dynamic greetings and message rotation
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
 
+    // Rotate messages every 6 seconds
+    const messageTimer = setInterval(() => {
+      setCurrentMessageIndex(prev => (prev + 1) % sophisticatedMessages.length);
+    }, 6000);
+
     document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       clearInterval(timer);
+      clearInterval(messageTimer);
       document.removeEventListener('mousemove', handleMouseMove);
     };
   }, [handleMouseMove]);
@@ -102,9 +127,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Dynamic Background System */}
-      <AkshitaDynamicBackground
+      {/* Sophisticated Galaxy Background System */}
+      <SophisticatedGalaxyBackground
         theme={theme}
+        isDarkMode={isDarkMode}
         mousePosition={mousePosition}
         isActive={true}
       />
@@ -116,55 +142,55 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
         initial="hidden"
         animate="visible"
       >
-        {/* Time-based Greeting */}
+        {/* Sophisticated Time-based Greeting */}
         <motion.div
           variants={itemVariants}
-          className="mb-4"
+          className="mb-6"
         >
-          <AkshitaAnimatedText
-            text={`${getTimeBasedGreeting()}, Beautiful! 🌅`}
-            variant="subtitle"
-            className="akshita-subtitle inline-block"
-          />
+          <SophisticatedText
+            variant="sophisticated-subtitle"
+            delay={0.2}
+          >
+            {getTimeBasedGreeting()}, Beautiful
+          </SophisticatedText>
         </motion.div>
 
-        {/* Main Hero Title with Rotating Messages */}
+        {/* Elegant Main Title */}
         <motion.div
           variants={itemVariants}
           className="mb-8"
         >
-          <AkshitaTextRotator
-            texts={romanticMessages}
-            variant="hero"
-            className="akshita-title"
-            interval={5000}
+          <ElegantTitle
+            text={sophisticatedMessages[currentMessageIndex]}
+            glowEffect={true}
+            letterSpacing="wide"
+            className="text-center"
           />
         </motion.div>
 
-        {/* AKSHITA's Special Name Display */}
+        {/* AKSHITA's Sophisticated Name Display */}
         <motion.div
           variants={itemVariants}
           className="mb-12"
           onClick={handleInteraction}
         >
-          <AkshitaAnimatedText
-            text="AKSHITA"
-            variant="akshita-special"
-            className="cursor-pointer hover:scale-105 transition-transform duration-300"
+          <SophisticatedText
+            variant="akshita-elegant"
             delay={2}
-          />
+            className="cursor-pointer hover:scale-105 transition-transform duration-500 text-center"
+          >
+            AKSHITA
+          </SophisticatedText>
         </motion.div>
 
-        {/* Dynamic Notification Message */}
+        {/* Elegant Romantic Quote */}
         <motion.div
           variants={itemVariants}
           className="mb-16"
         >
-          <AkshitaTextRotator
-            texts={notificationMessages}
-            variant="notification"
-            className="akshita-subtitle"
-            interval={6000}
+          <SophisticatedQuote
+            text={elegantNotifications[currentMessageIndex]}
+            className="max-w-4xl mx-auto"
           />
         </motion.div>
 
@@ -233,57 +259,51 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           </AkshitaMagicalButton>
         </motion.div>
 
-        {/* Interactive Features Display */}
+        {/* Sophisticated Features Display */}
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
         >
           <motion.div
-            className="akshita-subtitle p-6 rounded-2xl"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.3 }}
+            className="sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10"
+            whileHover={{ scale: 1.05, y: -8 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <div className="text-4xl mb-4">🗣️</div>
-            <AkshitaHighlightText
-              text="Voice commands for AKSHITA"
-              highlightWord="AKSHITA"
-              className="font-semibold"
-            />
-            <p className="mt-2 text-sm opacity-80">
-              Just speak and I'll listen, beautiful
-            </p>
+            <div className="text-5xl mb-6">🗣️</div>
+            <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
+              Voice Commands
+            </SophisticatedText>
+            <LuxuryParagraph size="sm" weight="light">
+              Elegant voice interaction designed for AKSHITA's convenience
+            </LuxuryParagraph>
           </motion.div>
 
           <motion.div
-            className="akshita-subtitle p-6 rounded-2xl"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.3 }}
+            className="sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10"
+            whileHover={{ scale: 1.05, y: -8 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <div className="text-4xl mb-4">🤖</div>
-            <AkshitaHighlightText
-              text="AI companion for AKSHITA"
-              highlightWord="AKSHITA"
-              className="font-semibold"
-            />
-            <p className="mt-2 text-sm opacity-80">
-              Chat with me anytime, anywhere
-            </p>
+            <div className="text-5xl mb-6">🤖</div>
+            <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
+              AI Companion
+            </SophisticatedText>
+            <LuxuryParagraph size="sm" weight="light">
+              Thoughtful conversations tailored for AKSHITA
+            </LuxuryParagraph>
           </motion.div>
 
           <motion.div
-            className="akshita-subtitle p-6 rounded-2xl"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.3 }}
+            className="sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10"
+            whileHover={{ scale: 1.05, y: -8 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <div className="text-4xl mb-4">🌟</div>
-            <AkshitaHighlightText
-              text="Personalized for AKSHITA"
-              highlightWord="AKSHITA"
-              className="font-semibold"
-            />
-            <p className="mt-2 text-sm opacity-80">
-              Every detail crafted with love
-            </p>
+            <div className="text-5xl mb-6">🌟</div>
+            <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
+              Personalized
+            </SophisticatedText>
+            <LuxuryParagraph size="sm" weight="light">
+              Every detail crafted with love for AKSHITA
+            </LuxuryParagraph>
           </motion.div>
         </motion.div>
       </motion.div>
@@ -375,97 +395,126 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
         }}
       />
 
-      {/* Interaction Counter Display */}
+      {/* Sophisticated Interaction Counter */}
       {interactionCount > 5 && (
         <motion.div
-          className="fixed top-4 right-4 z-50 akshita-subtitle px-4 py-2 rounded-full"
+          className="fixed top-4 right-4 z-50"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", duration: 0.5 }}
         >
-          <AkshitaHighlightText
-            text={`AKSHITA clicked ${interactionCount} times! 💕`}
-            highlightWord="AKSHITA"
-          />
+          <div className="sophisticated-card px-6 py-3 rounded-full backdrop-blur-md bg-white/10 border border-white/20">
+            <SophisticatedText variant="luxury-body">
+              AKSHITA interacted {interactionCount} times
+            </SophisticatedText>
+          </div>
         </motion.div>
       )}
 
-      {/* Scroll Indicator */}
+      {/* Elegant Scroll Indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30"
         animate={{
-          y: [0, 10, 0],
-          opacity: [0.5, 1, 0.5],
+          y: [0, 12, 0],
+          opacity: [0.6, 1, 0.6],
         }}
         transition={{
-          duration: 2,
+          duration: 3,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       >
-        <div className="akshita-subtitle px-4 py-2 rounded-full text-center">
-          <p className="text-sm mb-2">Discover more magic below</p>
-          <div className="text-2xl">👇</div>
+        <div className="sophisticated-card px-8 py-4 rounded-full backdrop-blur-md bg-white/10 border border-white/20 text-center">
+          <LuxuryParagraph size="sm" weight="light" className="mb-3">
+            Discover more elegance below
+          </LuxuryParagraph>
+          <motion.div 
+            className="text-3xl"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            ↓
+          </motion.div>
         </div>
       </motion.div>
 
-      {/* Dynamic Time Display */}
+      {/* Sophisticated Time Display & Night Mode Toggle */}
       <motion.div
-        className="fixed top-4 left-4 z-50 akshita-subtitle px-4 py-2 rounded-full"
+        className="fixed top-4 left-4 z-50 flex items-center gap-4"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 3, duration: 0.5 }}
       >
-        <AkshitaHighlightText
-          text={`${currentTime.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          })} with AKSHITA`}
-          highlightWord="AKSHITA"
-        />
+        <div className="sophisticated-time px-6 py-3 rounded-full backdrop-blur-md bg-white/10 border border-white/20">
+          <SophisticatedText variant="luxury-body" className="text-center">
+            {currentTime.toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            })} with AKSHITA
+          </SophisticatedText>
+        </div>
+        
+        {/* Night Mode Toggle */}
+        <motion.button
+          className="night-mode-toggle w-12 h-12 rounded-full backdrop-blur-md bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          <motion.span
+            className="text-2xl"
+            animate={{ rotate: isDarkMode ? 0 : 180 }}
+            transition={{ duration: 0.5 }}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </motion.span>
+        </motion.button>
       </motion.div>
 
-      {/* Love Declaration */}
+      {/* Sophisticated Love Declarations */}
       <motion.div
         className="absolute top-1/4 left-8 z-30 hidden lg:block"
         animate={{
-          rotate: [0, 5, -5, 0],
-          scale: [1, 1.1, 1],
+          rotate: [0, 3, -3, 0],
+          scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 4,
+          duration: 6,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       >
-        <div className="akshita-subtitle px-6 py-4 rounded-2xl transform -rotate-12">
-          <AkshitaAnimatedText
-            text="I love you, AKSHITA! 💖"
-            variant="subtitle"
+        <div className="sophisticated-card px-8 py-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 transform -rotate-12">
+          <SophisticatedText
+            variant="romantic-script"
             delay={4}
-          />
+          >
+            Forever yours, AKSHITA
+          </SophisticatedText>
         </div>
       </motion.div>
 
       <motion.div
         className="absolute top-1/3 right-8 z-30 hidden lg:block"
         animate={{
-          rotate: [0, -5, 5, 0],
-          scale: [1, 1.1, 1],
+          rotate: [0, -3, 3, 0],
+          scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 5,
+          duration: 7,
           repeat: Infinity,
           ease: "easeInOut",
           delay: 2
         }}
       >
-        <div className="akshita-subtitle px-6 py-4 rounded-2xl transform rotate-12">
-          <AkshitaAnimatedText
-            text="You're my everything! ✨"
-            variant="subtitle"
+        <div className="sophisticated-card px-8 py-6 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 transform rotate-12">
+          <SophisticatedText
+            variant="romantic-script"
             delay={5}
-          />
+          >
+            My heart belongs to you
+          </SophisticatedText>
         </div>
       </motion.div>
     </section>

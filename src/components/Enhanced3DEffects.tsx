@@ -36,15 +36,46 @@ export const Enhanced3DEffects: React.FC<Enhanced3DEffectsProps> = ({
   const animationRef = useRef<number>();
   const particlesRef = useRef<Particle3D[]>([]);
   const [cameraZ, setCameraZ] = useState(1000);
+  const [isSupported, setIsSupported] = useState(true);
+  const [hasError, setHasError] = useState(false);
   
   const mouseX = useSpring(0, { stiffness: 100, damping: 20 });
   const mouseY = useSpring(0, { stiffness: 100, damping: 20 });
 
-  // Update mouse spring values
+  // Check for canvas and WebGL support
   useEffect(() => {
-    mouseX.set((mousePosition.x / window.innerWidth - 0.5) * 200);
-    mouseY.set((mousePosition.y / window.innerHeight - 0.5) * 200);
-  }, [mousePosition, mouseX, mouseY]);
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        setIsSupported(false);
+        return;
+      }
+      
+      // Test for advanced canvas features
+      const hasAdvancedSupport = typeof ctx.createRadialGradient === 'function' &&
+                                typeof ctx.bezierCurveTo === 'function';
+      
+      if (!hasAdvancedSupport) {
+        setIsSupported(false);
+      }
+    } catch (error) {
+      console.warn('Enhanced 3D Effects not supported:', error);
+      setIsSupported(false);
+    }
+  }, []);
+
+  // Update mouse spring values with error handling
+  useEffect(() => {
+    try {
+      if (isSupported && window.innerWidth && window.innerHeight) {
+        mouseX.set((mousePosition.x / window.innerWidth - 0.5) * 200);
+        mouseY.set((mousePosition.y / window.innerHeight - 0.5) * 200);
+      }
+    } catch (error) {
+      console.warn('Mouse tracking error:', error);
+    }
+  }, [mousePosition, mouseX, mouseY, isSupported]);
 
   const getThemeColors = useCallback(() => {
     switch (theme) {
@@ -171,15 +202,16 @@ export const Enhanced3DEffects: React.FC<Enhanced3DEffectsProps> = ({
   }, [project3D, beatIntensity]);
 
   const updateParticles = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    try {
+      const canvas = canvasRef.current;
+      if (!canvas || !isSupported) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    // Clear canvas with depth fade
-    ctx.fillStyle = `rgba(0, 0, 0, ${theme === 'night' ? 0.05 : 0.02})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Clear canvas with depth fade
+      ctx.fillStyle = `rgba(0, 0, 0, ${theme === 'night' ? 0.05 : 0.02})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Update camera based on biometrics
     if (biometricData?.heartRate) {
@@ -225,7 +257,11 @@ export const Enhanced3DEffects: React.FC<Enhanced3DEffectsProps> = ({
              projected.y > -100 && projected.y < canvas.height + 100 &&
              particle.z > -1000 && particle.z < 1000;
     });
-  }, [theme, biometricData, beatIntensity, project3D, drawParticle3D]);
+    } catch (error) {
+      console.warn('3D Effects animation error:', error);
+      setHasError(true);
+    }
+  }, [theme, biometricData, beatIntensity, project3D, drawParticle3D, isSupported]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isActive) return;
@@ -319,6 +355,11 @@ export const Enhanced3DEffects: React.FC<Enhanced3DEffectsProps> = ({
       }
     }
   }, [biometricData?.heartRate, isActive, create3DParticle]);
+
+  // Don't render if not supported or has errors
+  if (!isSupported || hasError) {
+    return null;
+  }
 
   return (
     <motion.canvas

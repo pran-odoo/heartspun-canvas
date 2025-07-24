@@ -51,14 +51,50 @@ const Index = () => {
     };
   }, [getTimeBasedTheme, handleMouseMove]);
 
-  // Navigation handler
+  // Theme change handler with smooth transitions
+  const handleThemeChange = (theme: 'morning' | 'evening' | 'night') => {
+    // Add smooth transition class before changing theme
+    document.documentElement.classList.add('theme-transition');
+    
+    // Remove old theme classes
+    document.documentElement.classList.remove('morning', 'evening', 'night');
+    
+    // Add new theme class with a slight delay for smooth transition
+    setTimeout(() => {
+      document.documentElement.classList.add(theme);
+      setCurrentTheme(theme);
+    }, 50);
+
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition');
+    }, 550);
+  };
+
+  // Enhanced navigation handler with smooth scrolling
   const handleNavigation = (section: string) => {
     setActiveSection(section);
     
-    // Smooth scroll to section
+    // Smooth scroll to section with enhanced options
     const element = document.getElementById(section);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+      
+      // Add visual feedback for section transition
+      element.classList.add('section-enter');
+      setTimeout(() => {
+        element.classList.add('section-enter-active');
+        element.classList.remove('section-enter');
+      }, 50);
+      
+      // Clean up classes after transition
+      setTimeout(() => {
+        element.classList.remove('section-enter-active');
+      }, 500);
     }
   };
 
@@ -71,11 +107,6 @@ const Index = () => {
   const handleBiometricUpdate = useCallback((data: any) => {
     setBiometricData(data);
   }, []);
-
-  // Theme change handler
-  const handleThemeChange = (theme: 'morning' | 'evening' | 'night') => {
-    setCurrentTheme(theme);
-  };
 
   // Preference update handler
   const handlePreferenceUpdate = (preferences: any) => {
@@ -112,9 +143,9 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden">
+    <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
       {/* Background Effects */}
-      <div className="fixed inset-0 morphing-bg opacity-20 pointer-events-none" />
+      <div className="fixed inset-0 morphing-bg opacity-20 pointer-events-none will-change-transform" />
       
       {/* Enhanced 3D Particle System */}
       <Enhanced3DEffects

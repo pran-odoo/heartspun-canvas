@@ -105,8 +105,8 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
 
   return (
     <div className="fixed top-4 right-4 z-50">
-      <div className="glass-romantic rounded-2xl p-4 space-y-3">
-        <div className="text-sm font-romantic text-romantic">
+      <div className="glass-romantic rounded-2xl p-4 space-y-3 transition-smooth will-change-transform hover-lift">
+        <div className="text-sm font-romantic text-romantic transition-colors duration-500">
           {getGreeting()}
         </div>
         
@@ -115,32 +115,55 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
             variant={currentTheme === 'morning' ? 'default' : 'outline'}
             size="sm"
             onClick={() => handleManualThemeChange('morning')}
-            className="glass hover-lift"
+            className={`glass hover-lift btn-smooth transition-smooth will-change-transform ${
+              currentTheme === 'morning' ? 'glass-gold scale-110' : ''
+            }`}
           >
-            <Sun className="w-4 h-4" />
+            <Sun className={`w-4 h-4 transition-all duration-300 ${
+              currentTheme === 'morning' ? 'text-gold-deep animate-pulse' : ''
+            }`} />
           </Button>
           
           <Button
             variant={currentTheme === 'evening' ? 'default' : 'outline'}
             size="sm"
             onClick={() => handleManualThemeChange('evening')}
-            className="glass hover-lift"
+            className={`glass hover-lift btn-smooth transition-smooth will-change-transform ${
+              currentTheme === 'evening' ? 'glass-romantic scale-110' : ''
+            }`}
           >
-            <Sunset className="w-4 h-4" />
+            <Sunset className={`w-4 h-4 transition-all duration-300 ${
+              currentTheme === 'evening' ? 'text-romantic animate-pulse' : ''
+            }`} />
           </Button>
           
           <Button
             variant={currentTheme === 'night' ? 'default' : 'outline'}
             size="sm"
             onClick={() => handleManualThemeChange('night')}
-            className="glass hover-lift"
+            className={`glass hover-lift btn-smooth transition-smooth will-change-transform ${
+              currentTheme === 'night' ? 'glass scale-110' : ''
+            }`}
           >
-            <Moon className="w-4 h-4" />
+            <Moon className={`w-4 h-4 transition-all duration-300 ${
+              currentTheme === 'night' ? 'text-primary animate-pulse' : ''
+            }`} />
           </Button>
         </div>
         
-        <div className="text-xs text-muted-foreground">
-          {autoMode ? 'Auto mode' : 'Manual mode'}
+        <div className="text-xs text-muted-foreground transition-colors duration-500">
+          {autoMode ? '🤖 Auto mode' : '👤 Manual mode'}
+        </div>
+
+        {/* Theme Transition Indicator */}
+        <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+          <div 
+            className={`h-full transition-all duration-500 ease-out ${
+              currentTheme === 'morning' ? 'w-1/3 bg-gold' :
+              currentTheme === 'evening' ? 'w-2/3 bg-romantic' :
+              'w-full bg-primary'
+            }`}
+          />
         </div>
       </div>
     </div>

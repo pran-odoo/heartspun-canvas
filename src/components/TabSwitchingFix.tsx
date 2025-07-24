@@ -19,38 +19,61 @@ export const TabSwitchingFix: React.FC = () => {
     const resetAllFilters = () => {
       if (!isBlurPreventionActive.current) return;
 
-      try {
-        // Reset document-level filters
-        document.body.style.filter = 'none';
-        document.body.style.backdropFilter = 'none';
-        document.documentElement.style.filter = 'none';
-        document.documentElement.style.backdropFilter = 'none';
-
-        // Reset any elements with accumulated backdrop filters
-        const elementsWithBackdrop = document.querySelectorAll('[style*="backdrop-filter"], [style*="filter"]');
-        elementsWithBackdrop.forEach((element: any) => {
-          if (!element.dataset.intentionalBlur && !element.dataset.preserveFilter) {
-            // Check if this element has stuck filters
-            const computedStyle = window.getComputedStyle(element);
-            if (computedStyle.backdropFilter && computedStyle.backdropFilter !== 'none') {
-              element.style.transition = 'backdrop-filter 0.1s ease';
-              element.style.backdropFilter = 'none';
-              setTimeout(() => {
-                element.style.backdropFilter = '';
-                element.style.transition = '';
-              }, 100);
-            }
-            if (computedStyle.filter && computedStyle.filter !== 'none' && !computedStyle.filter.includes('drop-shadow')) {
-              element.style.filter = element.style.filter.replace(/blur\([^)]*\)/g, '');
-            }
+              try {
+          // COMPREHENSIVE BLUR ELIMINATION SYSTEM
+          
+          // Reset document and root level filters
+          document.body.style.filter = 'none';
+          document.body.style.backdropFilter = 'none';
+          document.documentElement.style.filter = 'none';
+          document.documentElement.style.backdropFilter = 'none';
+          
+          // Reset any #root element
+          const rootElement = document.getElementById('root');
+          if (rootElement) {
+            rootElement.style.filter = 'none';
+            rootElement.style.backdropFilter = 'none';
           }
-        });
 
-        // Force repaint to ensure clean state
-        document.body.offsetHeight; // Trigger reflow
-      } catch (error) {
-        console.warn('Blur reset encountered an error:', error);
-      }
+          // Clear any global CSS filter pollution
+          const allElements = document.querySelectorAll('*');
+          allElements.forEach((element: any) => {
+            if (!element.dataset.intentionalBlur && !element.dataset.preserveFilter) {
+              // Only reset problematic filters, preserve intentional ones
+              const computedStyle = window.getComputedStyle(element);
+              
+              // Handle backdrop-filter specifically
+              if (computedStyle.backdropFilter && 
+                  computedStyle.backdropFilter !== 'none' && 
+                  !computedStyle.backdropFilter.includes('drop-shadow')) {
+                element.style.backdropFilter = 'none';
+              }
+              
+              // Handle blur filters specifically while preserving other filters
+              if (computedStyle.filter && computedStyle.filter.includes('blur(')) {
+                const newFilter = computedStyle.filter.replace(/blur\([^)]*\)/g, '').trim();
+                element.style.filter = newFilter || 'none';
+              }
+            }
+          });
+
+          // Aggressive filter cleanup for persistent issues
+          document.body.setAttribute('data-blur-reset', Date.now().toString());
+          
+          // Force style recalculation and repaint
+          document.body.offsetHeight; // Trigger reflow
+          document.documentElement.offsetHeight; // Trigger root reflow
+          
+          // Additional cleanup for Vite/React specific elements
+          const viteElements = document.querySelectorAll('[data-vite-dev-id]');
+          viteElements.forEach((element: any) => {
+            element.style.filter = 'none';
+            element.style.backdropFilter = 'none';
+          });
+          
+        } catch (error) {
+          console.warn('Comprehensive blur reset encountered an error:', error);
+        }
     };
 
     // Enhanced visibility change handler

@@ -10,7 +10,7 @@ interface SpotifyIntegrationProps {
 
 // COMPREHENSIVE SPOTIFY WEB API CONFIGURATION
 const SPOTIFY_CONFIG = {
-  clientId: process.env.REACT_APP_SPOTIFY_CLIENT_ID || 'demo_mode',
+  clientId: import.meta.env.VITE_SPOTIFY_CLIENT_ID || 'demo_mode',
   redirectUri: typeof window !== 'undefined' ? window.location.origin : '',
   scopes: [
     'streaming',

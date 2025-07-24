@@ -11,13 +11,13 @@ interface ReactBitsGalaxyProps {
   className?: string;
 }
 
-// EXACT configuration matching ReactBits demo
+// EXACT configuration matching ReactBits demo with environment variable support
 const GALAXY_CONFIG = {
-  density: 2.4,
-  glowIntensity: 0.8,
+  density: parseFloat(import.meta.env.VITE_GALAXY_DENSITY) || 2.4,
+  glowIntensity: parseFloat(import.meta.env.VITE_GALAXY_GLOW_INTENSITY) || 0.8,
   saturation: 0.1,
   hueShift: 180,
-  twinkleIntensity: 0.8,
+  twinkleIntensity: parseFloat(import.meta.env.VITE_GALAXY_TWINKLE_INTENSITY) || 0.8,
   rotationSpeed: 0.2,
   mouseInteraction: true,
   mouseRepulsion: true

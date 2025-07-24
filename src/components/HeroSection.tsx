@@ -60,6 +60,126 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isSpotifyOpen, setIsSpotifyOpen] = useState(false);
+  const [effectsEnabled, setEffectsEnabled] = useState(true);
+  const [buttonClicked, setButtonClicked] = useState<string | null>(null);
+
+  // Enhanced button click handler with feedback
+  const handleButtonClick = useCallback((buttonType: string, action: () => void) => {
+    try {
+      // Visual feedback
+      setButtonClicked(buttonType);
+      
+      // Haptic feedback (if supported)
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      
+      // Execute action
+      action();
+      
+      // Reset visual feedback
+      setTimeout(() => setButtonClicked(null), 200);
+    } catch (error) {
+      console.error('Button action failed:', error);
+      // Fallback action - scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Safe navigation function
+  const safeNavigate = useCallback((target: string) => {
+    try {
+      if (target.startsWith('#')) {
+        // Scroll to section
+        const element = document.getElementById(target.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.warn(`Section ${target} not found`);
+        }
+      } else {
+        // Use onNavigate prop
+        onNavigate(target);
+      }
+    } catch (error) {
+      console.error('Navigation failed:', error);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [onNavigate]);
+
+  // Voice Commands functionality
+  const handleVoiceCommands = useCallback(() => {
+    try {
+      // Activate voice recognition
+      const voiceSection = document.getElementById('voice-section');
+      if (voiceSection) {
+        voiceSection.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        // Try to start voice recognition
+        const event = new CustomEvent('startVoiceRecognition');
+        window.dispatchEvent(event);
+      }
+    } catch (error) {
+      console.error('Voice activation failed:', error);
+    }
+  }, []);
+
+  // AI Companion functionality
+  const handleAICompanion = useCallback(() => {
+    try {
+      // Open chatbot
+      const event = new CustomEvent('openChatbot');
+      window.dispatchEvent(event);
+      
+      // Also scroll to AI section if it exists
+      const aiSection = document.getElementById('ai-section');
+      if (aiSection) {
+        aiSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } catch (error) {
+      console.error('AI Companion activation failed:', error);
+    }
+  }, []);
+
+  // Personalized functionality
+  const handlePersonalized = useCallback(() => {
+    try {
+      // Navigate to personalization or memories
+      const personalizedSection = document.getElementById('personalized-section') || 
+                                  document.getElementById('memories');
+      if (personalizedSection) {
+        personalizedSection.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        safeNavigate('memories');
+      }
+    } catch (error) {
+      console.error('Personalized navigation failed:', error);
+    }
+  }, [safeNavigate]);
+
+  // Discover more functionality
+  const handleDiscoverMore = useCallback(() => {
+    try {
+      // Scroll to next major section
+      const nextSection = document.getElementById('memories') || 
+                         document.getElementById('music') ||
+                         document.querySelector('.next-section');
+      if (nextSection) {
+        nextSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      } else {
+        // Fallback - scroll down by viewport height
+        window.scrollBy({ 
+          top: window.innerHeight, 
+          behavior: 'smooth' 
+        });
+      }
+    } catch (error) {
+      console.error('Discover more navigation failed:', error);
+    }
+  }, []);
 
   // Track mouse for interactive effects
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -290,9 +410,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
         >
           <motion.div
-            className="sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10"
-            whileHover={{ scale: 1.05, y: -8 }}
+            className={`feature-card voice-commands sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10 cursor-pointer transition-all duration-300 ${
+              buttonClicked === 'voice-commands' ? 'scale-95 bg-purple-500/20' : ''
+            }`}
+            whileHover={{ scale: 1.05, y: -8, boxShadow: "0 10px 25px rgba(139, 92, 246, 0.3)" }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            onClick={() => handleButtonClick('voice-commands', handleVoiceCommands)}
+            data-interactive
           >
             <div className="text-5xl mb-6">🗣️</div>
             <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
@@ -301,12 +426,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
             <LuxuryParagraph size="sm" weight="light">
               Elegant voice interaction designed for AKSHITA's convenience
             </LuxuryParagraph>
+            <div className="mt-4 text-sm text-purple-300 opacity-0 group-hover:opacity-100 transition-opacity">
+              Click to activate voice recognition
+            </div>
           </motion.div>
 
           <motion.div
-            className="sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10"
-            whileHover={{ scale: 1.05, y: -8 }}
+            className={`feature-card ai-companion sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10 cursor-pointer transition-all duration-300 ${
+              buttonClicked === 'ai-companion' ? 'scale-95 bg-blue-500/20' : ''
+            }`}
+            whileHover={{ scale: 1.05, y: -8, boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)" }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            onClick={() => handleButtonClick('ai-companion', handleAICompanion)}
+            data-interactive
           >
             <div className="text-5xl mb-6">🤖</div>
             <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
@@ -315,12 +448,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
             <LuxuryParagraph size="sm" weight="light">
               Thoughtful conversations tailored for AKSHITA
             </LuxuryParagraph>
+            <div className="mt-4 text-sm text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity">
+              Click to open chatbot
+            </div>
           </motion.div>
 
           <motion.div
-            className="sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10"
-            whileHover={{ scale: 1.05, y: -8 }}
+            className={`feature-card personalized sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10 cursor-pointer transition-all duration-300 ${
+              buttonClicked === 'personalized' ? 'scale-95 bg-pink-500/20' : ''
+            }`}
+            whileHover={{ scale: 1.05, y: -8, boxShadow: "0 10px 25px rgba(236, 72, 153, 0.3)" }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            onClick={() => handleButtonClick('personalized', handlePersonalized)}
+            data-interactive
           >
             <div className="text-5xl mb-6">🌟</div>
             <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
@@ -329,6 +470,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
             <LuxuryParagraph size="sm" weight="light">
               Every detail crafted with love for AKSHITA
             </LuxuryParagraph>
+            <div className="mt-4 text-sm text-pink-300 opacity-0 group-hover:opacity-100 transition-opacity">
+              Click to explore personalization
+            </div>
           </motion.div>
         </motion.div>
       </motion.div>
@@ -449,7 +593,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           ease: "easeInOut"
         }}
       >
-        <div className="sophisticated-card px-8 py-4 rounded-full backdrop-blur-md bg-white/10 border border-white/20 text-center">
+        <button 
+          className={`discover-button sophisticated-card px-8 py-4 rounded-full backdrop-blur-md bg-white/10 border border-white/20 text-center cursor-pointer transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-lg ${
+            buttonClicked === 'discover-more' ? 'scale-95 bg-gradient-to-r from-purple-500/30 to-pink-500/30' : ''
+          }`}
+          onClick={() => handleButtonClick('discover-more', handleDiscoverMore)}
+          data-interactive
+        >
           <LuxuryParagraph size="sm" weight="light" className="mb-3">
             Discover more elegance below
           </LuxuryParagraph>
@@ -460,7 +610,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           >
             ↓
           </motion.div>
-        </div>
+        </button>
       </motion.div>
 
       {/* Sophisticated Time Display & Night Mode Toggle */}

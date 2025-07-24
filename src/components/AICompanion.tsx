@@ -302,6 +302,39 @@ export const AICompanion: React.FC<AICompanionProps> = ({
     };
   }, []);
 
+  // Custom event listeners for button integration
+  useEffect(() => {
+    const handleOpenChatbot = () => {
+      setIsOpen(true);
+      setUnreadCount(0);
+      // Add a welcoming message when opened via button
+      setTimeout(() => {
+        addAIMessage("You opened me with a click, AKSHITA! 💕 What's on your mind?", 'loving');
+      }, 500);
+    };
+
+    const handleStartVoiceRecognition = () => {
+      setIsOpen(true);
+      setUnreadCount(0);
+      // Start voice listening when opened via voice button
+      setTimeout(() => {
+        setIsListeningInChat(true);
+        if (recognition) {
+          recognition.start();
+        }
+        addAIMessage("Voice mode activated for you, AKSHITA! 🎙️ Speak to me!", 'happy');
+      }, 500);
+    };
+
+    window.addEventListener('openChatbot', handleOpenChatbot);
+    window.addEventListener('startVoiceRecognition', handleStartVoiceRecognition);
+
+    return () => {
+      window.removeEventListener('openChatbot', handleOpenChatbot);
+      window.removeEventListener('startVoiceRecognition', handleStartVoiceRecognition);
+    };
+  }, [recognition, addAIMessage]);
+
   const handleSend = useCallback(() => {
     if (!inputValue.trim()) return;
 

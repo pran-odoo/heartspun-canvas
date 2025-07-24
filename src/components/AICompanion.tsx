@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Heart, Sparkles, Send, X, Mic, MicOff, Paperclip, Camera, Image, CheckCheck, Check } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { MessageCircle, Heart, Sparkles, Send, X, Mic, MicOff, Paperclip, Camera, Image, CheckCheck, Check, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -22,49 +22,49 @@ interface AICompanionProps {
 }
 
 const compliments = [
-  "Your smile could light up the darkest night ✨",
-  "Every moment with you feels like magic 💫",
-  "You make ordinary days extraordinary 🌟",
-  "Your laugh is my favorite sound in the world 🎵",
-  "You're more beautiful than any sunset 🌅",
-  "You turn my world into poetry 📝",
-  "Your eyes hold entire galaxies 🌌",
-  "You're the melody my heart dances to 💃",
-  "Every day with you is a new adventure 🗺️",
-  "You make time stop and my heart race ⏰",
+  "AKSHITA, your smile could light up the darkest night ✨",
+  "Every moment with you feels like magic, AKSHITA 💫",
+  "You make ordinary days extraordinary, beautiful AKSHITA 🌟",
+  "Your laugh is my favorite sound in the world, AKSHITA 🎵",
+  "AKSHITA, you're more beautiful than any sunset 🌅",
+  "You turn my world into poetry, sweet AKSHITA 📝",
+  "Your eyes hold entire galaxies, AKSHITA 🌌",
+  "AKSHITA, you're the melody my heart dances to 💃",
+  "Every day with you is a new adventure, AKSHITA 🗺️",
+  "You make time stop and my heart race, AKSHITA ⏰",
 ];
 
 const responses = {
   greetings: [
-    "Hello beautiful! How's your day going? 💕",
-    "Hey gorgeous! I've been waiting to chat with you ✨",
-    "Hi lovely! You look absolutely radiant today 🌟",
+    "Hello beautiful AKSHITA! How's your day going? 💕",
+    "Hey gorgeous AKSHITA! I've been waiting to chat with you ✨",
+    "Hi lovely AKSHITA! You look absolutely radiant today 🌟",
   ],
   loving: [
-    "I love how thoughtful you are 💖",
-    "You have such a beautiful way of seeing the world 🌍",
-    "Your kindness makes everything better 🌸",
+    "I love how thoughtful you are, AKSHITA 💖",
+    "You have such a beautiful way of seeing the world, AKSHITA 🌍",
+    "Your kindness makes everything better, sweet AKSHITA 🌸",
   ],
   playful: [
-    "You know what? You're absolutely amazing! 🎉",
-    "I bet you're smiling right now, aren't you? 😊",
-    "Want to hear a secret? You make everything more fun! 🎊",
+    "You know what, AKSHITA? You're absolutely amazing! 🎉",
+    "I bet you're smiling right now, aren't you AKSHITA? 😊",
+    "Want to hear a secret, AKSHITA? You make everything more fun! 🎊",
   ],
   thoughtful: [
-    "I've been thinking about how lucky I am to know you 💭",
-    "You inspire me to be better every day 🌱",
-    "There's something magical about the way you care about others ✨",
+    "I've been thinking about how lucky I am to know you, AKSHITA 💭",
+    "You inspire me to be better every day, AKSHITA 🌱",
+    "There's something magical about the way you care about others, AKSHITA ✨",
   ],
   voiceActivated: [
-    "I heard you call for me! 🎙️ What would you like to talk about?",
-    "Voice activated! 🗣️ I'm all ears, beautiful!",
-    "You summoned me with your lovely voice! ✨ How can I help?",
+    "I heard you call for me, AKSHITA! 🎙️ What would you like to talk about?",
+    "Voice activated for you, AKSHITA! 🗣️ I'm all ears, beautiful!",
+    "You summoned me with your lovely voice, AKSHITA! ✨ How can I help?",
   ],
 };
 
 export const AICompanion: React.FC<AICompanionProps> = ({
   theme,
-  userName = "Beautiful",
+  userName = "AKSHITA",
   isVoiceTriggered = false,
   onVoiceCommand,
 }) => {
@@ -77,8 +77,20 @@ export const AICompanion: React.FC<AICompanionProps> = ({
   const [recognition, setRecognition] = useState<any>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [lastUserActivity, setLastUserActivity] = useState(Date.now());
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Smooth cursor tracking for romantic effects
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { damping: 25, stiffness: 300 };
+  const x = useSpring(mouseX, springConfig);
+  const y = useSpring(mouseY, springConfig);
 
   // Initialize speech recognition for chat
   useEffect(() => {
@@ -115,11 +127,11 @@ export const AICompanion: React.FC<AICompanionProps> = ({
       const voiceGreeting = responses.voiceActivated[Math.floor(Math.random() * responses.voiceActivated.length)];
       setTimeout(() => {
         addAIMessage(voiceGreeting, 'happy');
-      }, 500);
+      }, 800);
     }
   }, [isVoiceTriggered]);
 
-  // Initialize conversation
+  // Initialize conversation with AKSHITA's name
   useEffect(() => {
     if (messages.length === 0) {
       const greeting = responses.greetings[Math.floor(Math.random() * responses.greetings.length)];
@@ -134,17 +146,62 @@ export const AICompanion: React.FC<AICompanionProps> = ({
     }
   }, [messages.length]);
 
-  // Auto-scroll to bottom with smooth animation
+  // Enhanced auto-scroll with smooth animation and hints
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'end'
-      });
+      const scrollContainer = messagesEndRef.current.parentElement;
+      if (scrollContainer) {
+        const isNearBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 100;
+        
+        if (isNearBottom) {
+          messagesEndRef.current.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'end'
+          });
+          setShowScrollHint(false);
+        } else {
+          setShowScrollHint(true);
+        }
+      }
     }
   }, [messages]);
 
-  // Update message status simulation
+  // Enhanced focus management for smooth UX
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      // Delay focus to ensure smooth animation completion
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 500);
+    }
+  }, [isOpen]);
+
+  // Cursor visibility enforcement throughout chatbot experience
+  useEffect(() => {
+    if (isOpen) {
+      // Force cursor visibility
+      document.body.style.cursor = 'auto';
+      const chatContainer = containerRef.current;
+      if (chatContainer) {
+        chatContainer.style.cursor = 'auto';
+        // Ensure all child elements have proper cursor
+        const allElements = chatContainer.querySelectorAll('*');
+        allElements.forEach((el: any) => {
+          if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.classList.contains('clickable')) {
+            el.style.cursor = 'pointer';
+          } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.style.cursor = 'text';
+          }
+        });
+      }
+    }
+    
+    return () => {
+      document.body.style.cursor = '';
+    };
+  }, [isOpen]);
+
+  // Update message status simulation with enhanced timing
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && !lastMessage.isAI && lastMessage.status === 'sent') {
@@ -152,17 +209,17 @@ export const AICompanion: React.FC<AICompanionProps> = ({
         setMessages(prev => prev.map(msg => 
           msg.id === lastMessage.id ? { ...msg, status: 'delivered' } : msg
         ));
-      }, 1000);
+      }, 800);
       
       setTimeout(() => {
         setMessages(prev => prev.map(msg => 
           msg.id === lastMessage.id ? { ...msg, status: 'read' } : msg
         ));
-      }, 2000);
+      }, 1500);
     }
   }, [messages]);
 
-  // Periodic compliments and unread counter
+  // Periodic compliments with AKSHITA's name
   useEffect(() => {
     if (!isOpen) {
       const interval = setInterval(() => {
@@ -193,24 +250,24 @@ export const AICompanion: React.FC<AICompanionProps> = ({
       setMessages(prev => [...prev, newMessage]);
       setIsTyping(false);
       setCompanionMood(emotion || 'happy');
-    }, 1000 + Math.random() * 2000);
+    }, 1200 + Math.random() * 1800);
   }, []);
 
   const generateResponse = useCallback((userMessage: string): { text: string; emotion: Message['emotion'] } => {
     const message = userMessage.toLowerCase();
     
-    // Enhanced context-aware responses
+    // Enhanced context-aware responses with AKSHITA's name
     if (message.includes('voice') || message.includes('speak') || message.includes('say')) {
       return { 
-        text: "I love hearing your voice! You can use voice commands throughout the app, or click the mic button here to speak to me directly. 🎙️", 
+        text: `I love hearing your voice, AKSHITA! You can use voice commands throughout the app, or click the mic button here to speak to me directly. 🎙️`, 
         emotion: 'happy' 
       };
     }
 
     if (message.includes('navigate') || message.includes('go to') || message.includes('show me')) {
       return { 
-        text: "I can help you navigate! Try saying 'go home', 'show memories', 'play music', or use the floating navigation. Where would you like to go? 🧭", 
-        emotion: 'helpful' as any
+        text: `I can help you navigate, AKSHITA! Try saying 'go home', 'show memories', 'play music', or use the floating navigation. Where would you like to go? 🧭`, 
+        emotion: 'playful' as any
       };
     }
     
@@ -229,28 +286,28 @@ export const AICompanion: React.FC<AICompanionProps> = ({
       return { text: response, emotion: 'thoughtful' };
     }
 
-    // Smart contextual responses
+    // Smart contextual responses with AKSHITA's name
     const contextualResponses = [
-      `That's fascinating, ${userName}! Tell me more about that 💫`,
-      `I love how you express yourself! ✨`,
-      `You always have such interesting perspectives 💖`,
-      `That really made me think! 🤔`,
-      `Your thoughts are always so beautiful 🌟`,
-      `I could listen to you talk all day! 😊`,
+      `That's fascinating, AKSHITA! Tell me more about that 💫`,
+      `I love how you express yourself, AKSHITA! ✨`,
+      `You always have such interesting perspectives, AKSHITA 💖`,
+      `That really made me think, AKSHITA! 🤔`,
+      `Your thoughts are always so beautiful, AKSHITA 🌟`,
+      `I could listen to you talk all day, AKSHITA! 😊`,
     ];
     
     return {
       text: contextualResponses[Math.floor(Math.random() * contextualResponses.length)],
       emotion: 'happy',
     };
-  }, [userName]);
+  }, []);
 
   const handleSend = useCallback(() => {
     if (!inputValue.trim()) return;
 
     setLastUserActivity(Date.now());
 
-    // Add user message with status tracking
+    // Add user message with enhanced status tracking
     const userMessage: Message = {
       id: Date.now().toString(),
       text: inputValue,
@@ -261,7 +318,7 @@ export const AICompanion: React.FC<AICompanionProps> = ({
 
     setMessages(prev => [...prev, userMessage]);
 
-    // Generate AI response
+    // Generate AI response with AKSHITA context
     const { text, emotion } = generateResponse(inputValue);
     addAIMessage(text, emotion);
     
@@ -285,7 +342,6 @@ export const AICompanion: React.FC<AICompanionProps> = ({
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Simulate file sharing
       const fileMessage: Message = {
         id: Date.now().toString(),
         text: `📎 Shared: ${file.name}`,
@@ -296,9 +352,26 @@ export const AICompanion: React.FC<AICompanionProps> = ({
       };
       
       setMessages(prev => [...prev, fileMessage]);
-      addAIMessage("What a lovely share! I can see how much that means to you ✨", 'loving');
+      addAIMessage(`What a lovely share, AKSHITA! I can see how much that means to you ✨`, 'loving');
     }
   }, [addAIMessage]);
+
+  const handleChatOpen = useCallback(() => {
+    setIsAnimating(true);
+    setIsOpen(true);
+    setTimeout(() => setIsAnimating(false), 600);
+  }, []);
+
+  const handleChatClose = useCallback(() => {
+    setIsAnimating(true);
+    setIsOpen(false);
+    setTimeout(() => setIsAnimating(false), 500);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    setShowScrollHint(false);
+  }, []);
 
   const getMoodEmoji = (mood: string) => {
     switch (mood) {
@@ -319,20 +392,79 @@ export const AICompanion: React.FC<AICompanionProps> = ({
     }
   };
 
+  // Enhanced animation variants
+  const backdropVariants = {
+    hidden: { 
+      opacity: 0,
+      backdropFilter: 'blur(0px) saturate(100%)',
+    },
+    visible: { 
+      opacity: 1,
+      backdropFilter: 'blur(20px) saturate(180%)',
+      transition: {
+        duration: 0.4,
+        ease: [0.4, 0, 0.2, 1]
+      }
+    },
+    exit: {
+      opacity: 0,
+      backdropFilter: 'blur(0px) saturate(100%)',
+      transition: {
+        duration: 0.3,
+        ease: [0.4, 0, 1, 1]
+      }
+    }
+  };
+
+  const containerVariants = {
+    hidden: {
+      scale: 0.8,
+      y: 100,
+      opacity: 0,
+      rotate: -2,
+    },
+    visible: {
+      scale: 1,
+      y: 0,
+      opacity: 1,
+      rotate: 0,
+      transition: {
+        type: "spring",
+        damping: 25,
+        stiffness: 300,
+        delay: 0.1,
+        duration: 0.6
+      }
+    },
+    exit: {
+      scale: 0.9,
+      y: 50,
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+        ease: [0.4, 0, 1, 1]
+      }
+    }
+  };
+
   return (
     <>
-      {/* Enhanced Floating Chat Button */}
+      {/* Enhanced Floating Chat Button with AKSHITA-themed animations */}
       <motion.div
         className="fixed bottom-6 right-6 z-50"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 2, type: "spring" }}
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ delay: 2, type: "spring", damping: 15, stiffness: 200 }}
       >
         <motion.button
           className="w-16 h-16 glass-romantic rounded-full flex items-center justify-center relative overflow-hidden hover-lift btn-smooth will-change-transform"
-          whileHover={{ scale: 1.1 }}
+          style={{ cursor: 'pointer' }}
+          whileHover={{ 
+            scale: 1.15,
+            boxShadow: '0 20px 40px rgba(255, 105, 180, 0.4)',
+          }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(true)}
+          onClick={handleChatOpen}
           animate={{
             boxShadow: [
               '0 0 20px rgba(255, 105, 180, 0.3)',
@@ -344,67 +476,133 @@ export const AICompanion: React.FC<AICompanionProps> = ({
         >
           <MessageCircle className="w-6 h-6 text-romantic" />
           
+          {/* AKSHITA's initials floating effect */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center text-xs font-bold text-romantic opacity-20"
+            animate={{ 
+              scale: [1, 1.1, 1],
+              opacity: [0.2, 0.4, 0.2]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            A
+          </motion.div>
+          
           {/* Enhanced Notification System */}
           {unreadCount > 0 && (
             <motion.div
-              className="absolute -top-2 -right-2 min-w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold"
+              className="absolute -top-2 -right-2 min-w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
+              whileHover={{ scale: 1.2 }}
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </motion.div>
           )}
           
-          {/* Pulsing heart indicator */}
+          {/* Romantic pulsing heart with AKSHITA theme */}
           <motion.div
-            className="absolute -bottom-1 -right-1 w-4 h-4 bg-romantic rounded-full flex items-center justify-center"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
+            className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-romantic to-pink-500 rounded-full flex items-center justify-center shadow-md"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            <Heart className="w-2 h-2 text-white" />
+            <Heart className="w-3 h-3 text-white" />
+          </motion.div>
+
+          {/* Floating hearts for AKSHITA */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            animate={{
+              rotate: 360,
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          >
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 text-romantic"
+                style={{
+                  top: `${20 + i * 20}%`,
+                  left: `${20 + i * 20}%`,
+                }}
+                animate={{
+                  scale: [0, 1, 0],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  delay: i * 1.3,
+                }}
+              >
+                💕
+              </motion.div>
+            ))}
           </motion.div>
         </motion.button>
       </motion.div>
 
-      {/* Enhanced Chat Interface */}
-      <AnimatePresence>
+      {/* Premium Enhanced Chat Interface for AKSHITA */}
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={(e) => e.target === e.currentTarget && setIsOpen(false)}
+            className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
+            style={{ cursor: 'auto' }}
+            variants={backdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={(e) => e.target === e.currentTarget && handleChatClose()}
           >
+            {/* Romantic gradient overlay for AKSHITA */}
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-romantic/5 to-purple-500/10" />
+            
             <motion.div
-              className="glass-romantic rounded-3xl w-full max-w-md h-[500px] flex flex-col overflow-hidden will-change-transform"
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              ref={containerRef}
+              className="glass-romantic rounded-3xl w-full max-w-md h-[600px] flex flex-col overflow-hidden will-change-transform shadow-2xl"
+              style={{ cursor: 'auto' }}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
-              {/* Enhanced Header */}
-              <div className="p-4 border-b border-white/20 flex items-center justify-between">
+              {/* Premium Header with AKSHITA's personal touch */}
+              <div className="p-4 border-b border-white/20 flex items-center justify-between bg-gradient-to-r from-romantic/10 to-pink-500/10">
                 <div className="flex items-center space-x-3">
                   <motion.div
-                    className="w-10 h-10 glass rounded-full flex items-center justify-center"
+                    className="w-12 h-12 glass rounded-full flex items-center justify-center relative overflow-hidden"
                     animate={{ 
-                      rotate: [0, 10, -10, 0],
+                      rotate: [0, 5, -5, 0],
                       scale: [1, 1.05, 1]
                     }}
-                    transition={{ duration: 3, repeat: Infinity }}
+                    transition={{ duration: 4, repeat: Infinity }}
                   >
-                    <span className="text-lg">{getMoodEmoji(companionMood)}</span>
+                    <span className="text-xl">{getMoodEmoji(companionMood)}</span>
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-romantic/20 to-pink-500/20 rounded-full"
+                      animate={{ opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
                   </motion.div>
                   <div>
-                    <h3 className="font-romantic text-romantic font-semibold">AI Companion</h3>
+                    <motion.h3 
+                      className="font-romantic text-romantic font-semibold text-lg"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      💕 For AKSHITA
+                    </motion.h3>
                     <motion.p 
                       className="text-xs text-muted-foreground"
                       animate={{ opacity: [0.5, 1, 0.5] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      {isTyping ? 'Typing...' : 'Always here for you'}
+                      {isTyping ? '💖 Typing something special...' : '✨ Always here for you, beautiful'}
                     </motion.p>
                   </div>
                 </div>
@@ -413,7 +611,8 @@ export const AICompanion: React.FC<AICompanionProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={() => onVoiceCommand?.('help')}
-                    className="text-romantic hover:bg-romantic/20"
+                    className="text-romantic hover:bg-romantic/20 btn-smooth"
+                    style={{ cursor: 'pointer' }}
                     title="Voice Commands Help"
                   >
                     <Mic className="w-4 h-4" />
@@ -421,58 +620,82 @@ export const AICompanion: React.FC<AICompanionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsOpen(false)}
-                    className="text-romantic hover:bg-romantic/20"
+                    onClick={handleChatClose}
+                    className="text-romantic hover:bg-romantic/20 btn-smooth"
+                    style={{ cursor: 'pointer' }}
                   >
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
 
-              {/* Enhanced Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
+              {/* Enhanced Messages Area with premium scroll */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative" style={{ cursor: 'auto' }}>
                 <AnimatePresence initial={false}>
                   {messages.map((message, index) => (
                     <motion.div
                       key={message.id}
                       className={`flex ${message.isAI ? 'justify-start' : 'justify-end'}`}
-                      initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                      initial={{ opacity: 0, y: 30, scale: 0.8 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -20, scale: 0.8 }}
                       transition={{ 
                         type: "spring",
-                        damping: 25,
+                        damping: 20,
                         stiffness: 200,
                         delay: index * 0.05
                       }}
                     >
                       <div className="flex flex-col max-w-xs">
                         <motion.div
-                          className={`p-3 rounded-2xl ${
+                          className={`p-4 rounded-2xl relative overflow-hidden ${
                             message.isAI
-                              ? 'glass text-romantic'
-                              : 'bg-romantic text-white'
+                              ? 'glass text-romantic border border-romantic/20'
+                              : 'bg-gradient-to-r from-romantic to-pink-500 text-white shadow-lg'
                           }`}
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ 
+                            scale: 1.02,
+                            boxShadow: message.isAI 
+                              ? '0 10px 30px rgba(255, 105, 180, 0.2)' 
+                              : '0 10px 30px rgba(255, 105, 180, 0.4)'
+                          }}
                           transition={{ duration: 0.2 }}
                         >
-                          <p className="text-sm">{message.text}</p>
-                          <div className="flex items-center justify-between mt-1">
+                          {/* AKSHITA-themed message background effect */}
+                          {message.isAI && (
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-romantic/5 to-pink-500/5"
+                              animate={{ opacity: [0.3, 0.6, 0.3] }}
+                              transition={{ duration: 3, repeat: Infinity }}
+                            />
+                          )}
+                          
+                          <p className="text-sm relative z-10">{message.text}</p>
+                          <div className="flex items-center justify-between mt-2 relative z-10">
                             {message.emotion && (
                               <motion.span
                                 className="inline-block"
-                                animate={{ scale: [1, 1.2, 1] }}
-                                transition={{ duration: 0.5 }}
+                                animate={{ 
+                                  scale: [1, 1.2, 1],
+                                  rotate: [0, 5, -5, 0]
+                                }}
+                                transition={{ duration: 0.8 }}
                               >
                                 <Sparkles className="w-3 h-3 inline text-romantic" />
                               </motion.span>
                             )}
                             {!message.isAI && (
                               <div className="flex items-center space-x-1">
-                                <span className="text-xs opacity-60">
+                                <span className="text-xs opacity-70">
                                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
-                                {getStatusIcon(message.status)}
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ delay: 0.5 }}
+                                >
+                                  {getStatusIcon(message.status)}
+                                </motion.div>
                               </div>
                             )}
                           </div>
@@ -482,17 +705,22 @@ export const AICompanion: React.FC<AICompanionProps> = ({
                   ))}
                 </AnimatePresence>
                 
-                {/* Enhanced Typing Indicator */}
+                {/* Enhanced Typing Indicator for AKSHITA */}
                 <AnimatePresence>
                   {isTyping && (
                     <motion.div
                       className="flex justify-start"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+                      exit={{ opacity: 0, y: -20 }}
                     >
-                      <div className="glass p-3 rounded-2xl">
-                        <motion.div className="flex space-x-1">
+                      <div className="glass p-4 rounded-2xl border border-romantic/20 relative overflow-hidden">
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-romantic/10 to-pink-500/10"
+                          animate={{ x: [-100, 100] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                        <motion.div className="flex space-x-1 relative z-10">
                           {[0, 1, 2].map((i) => (
                             <motion.div
                               key={i}
@@ -514,86 +742,121 @@ export const AICompanion: React.FC<AICompanionProps> = ({
                   )}
                 </AnimatePresence>
                 
+                {/* Scroll to bottom hint */}
+                <AnimatePresence>
+                  {showScrollHint && (
+                    <motion.button
+                      className="absolute bottom-4 right-4 w-10 h-10 glass-romantic rounded-full flex items-center justify-center shadow-lg"
+                      style={{ cursor: 'pointer' }}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={scrollToBottom}
+                    >
+                      <ArrowDown className="w-4 h-4 text-romantic" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+                
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Enhanced Input Area */}
-              <div className="p-4 border-t border-white/20">
-                <div className="flex space-x-2 mb-2">
+              {/* Premium Input Area for AKSHITA */}
+              <div className="p-4 border-t border-white/20 bg-gradient-to-r from-romantic/5 to-pink-500/5">
+                <div className="flex space-x-3 mb-3">
                   <div className="flex-1 relative">
                     <Input
+                      ref={inputRef}
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder={isListeningInChat ? "Listening..." : "Type your message..."}
-                      className="glass border-white/20 text-romantic placeholder:text-romantic/60 pr-12"
+                      placeholder={isListeningInChat ? "🎙️ Listening for AKSHITA..." : "💕 Type your message, AKSHITA..."}
+                      className="glass border-romantic/30 text-romantic placeholder:text-romantic/60 pr-16 h-12 rounded-2xl transition-all duration-300 focus:border-romantic focus:ring-2 focus:ring-romantic/20"
+                      style={{ cursor: 'text' }}
                       disabled={isListeningInChat}
                     />
                     {isListeningInChat && (
                       <motion.div
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2"
                         animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 0.5, repeat: Infinity }}
+                        transition={{ duration: 0.8, repeat: Infinity }}
                       >
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-romantic">Listening...</span>
                       </motion.div>
                     )}
                   </div>
                   
-                  {/* Enhanced Action Buttons */}
+                  {/* Enhanced Action Buttons with premium feel */}
                   <Button
                     onClick={startVoiceInput}
                     disabled={!recognition || isListeningInChat}
-                    className={`glass-romantic hover:bg-romantic/20 btn-smooth ${
-                      isListeningInChat ? 'bg-red-500/20' : ''
+                    className={`glass-romantic hover:bg-romantic/20 btn-smooth w-12 h-12 rounded-2xl transition-all duration-300 ${
+                      isListeningInChat ? 'bg-red-500/20 border-red-500/30' : ''
                     }`}
-                    title="Voice Input"
+                    style={{ cursor: 'pointer' }}
+                    title="Voice Input for AKSHITA"
                   >
                     {isListeningInChat ? (
-                      <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 0.5 }}>
-                        <MicOff className="w-4 h-4" />
+                      <motion.div 
+                        animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }} 
+                        transition={{ repeat: Infinity, duration: 0.6 }}
+                      >
+                        <MicOff className="w-5 h-5" />
                       </motion.div>
                     ) : (
-                      <Mic className="w-4 h-4" />
+                      <Mic className="w-5 h-5" />
                     )}
                   </Button>
                   
                   <Button
                     onClick={() => fileInputRef.current?.click()}
-                    className="glass-romantic hover:bg-romantic/20 btn-smooth"
-                    title="Share File"
+                    className="glass-romantic hover:bg-romantic/20 btn-smooth w-12 h-12 rounded-2xl transition-all duration-300"
+                    style={{ cursor: 'pointer' }}
+                    title="Share with AKSHITA"
                   >
-                    <Paperclip className="w-4 h-4" />
+                    <Paperclip className="w-5 h-5" />
                   </Button>
                   
                   <Button
                     onClick={handleSend}
                     disabled={!inputValue.trim()}
-                    className="glass-romantic hover:bg-romantic/20 btn-smooth disabled:opacity-50"
+                    className="glass-romantic hover:bg-romantic/20 btn-smooth disabled:opacity-50 w-12 h-12 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed"
+                    style={{ cursor: inputValue.trim() ? 'pointer' : 'not-allowed' }}
                   >
-                    <Send className="w-4 h-4" />
+                    <motion.div
+                      whileHover={{ x: 2 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Send className="w-5 h-5" />
+                    </motion.div>
                   </Button>
                 </div>
                 
-                {/* Quick Action Buttons */}
-                <div className="flex space-x-2 text-xs">
+                {/* Enhanced Quick Action Buttons for AKSHITA */}
+                <div className="flex space-x-3 text-xs">
                   <button
-                    onClick={() => setInputValue("Tell me something nice")}
-                    className="text-romantic/60 hover:text-romantic transition-colors"
+                    onClick={() => setInputValue("Tell me something nice, beautiful")}
+                    className="text-romantic/70 hover:text-romantic transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg hover:bg-romantic/10"
+                    style={{ cursor: 'pointer' }}
                   >
-                    💕 Compliment
+                    💕 Sweet words
                   </button>
                   <button
-                    onClick={() => setInputValue("How are you feeling?")}
-                    className="text-romantic/60 hover:text-romantic transition-colors"
+                    onClick={() => setInputValue("How are you feeling about AKSHITA today?")}
+                    className="text-romantic/70 hover:text-romantic transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg hover:bg-romantic/10"
+                    style={{ cursor: 'pointer' }}
                   >
-                    🤔 Check mood
+                    🥰 Check mood
                   </button>
                   <button
-                    onClick={() => setInputValue("Help me navigate")}
-                    className="text-romantic/60 hover:text-romantic transition-colors"
+                    onClick={() => setInputValue("Help AKSHITA navigate this beautiful site")}
+                    className="text-romantic/70 hover:text-romantic transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg hover:bg-romantic/10"
+                    style={{ cursor: 'pointer' }}
                   >
-                    🧭 Navigation help
+                    🧭 Guide me
                   </button>
                 </div>
               </div>

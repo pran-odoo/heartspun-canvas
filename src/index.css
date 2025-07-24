@@ -563,4 +563,286 @@
     transform: translateY(0);
     transition: all var(--transition-fast);
   }
+  
+  /* Premium Chatbot Enhancements for AKSHITA */
+  .chatbot-container * {
+    cursor: auto !important;
+  }
+  
+  .chatbot-container button,
+  .chatbot-container [role="button"],
+  .chatbot-container .clickable {
+    cursor: pointer !important;
+  }
+  
+  .chatbot-container input,
+  .chatbot-container textarea {
+    cursor: text !important;
+  }
+  
+  /* AKSHITA-themed romantic backdrop */
+  .romantic-backdrop {
+    backdrop-filter: blur(20px) saturate(180%) hue-rotate(10deg);
+    background: linear-gradient(135deg, 
+      rgba(255, 105, 180, 0.05),
+      rgba(255, 20, 147, 0.03),
+      rgba(199, 21, 133, 0.05),
+      rgba(255, 105, 180, 0.04)
+    );
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Enhanced glassmorphism for AKSHITA */
+  .glass-akshita {
+    background: linear-gradient(135deg, 
+      hsla(330, 100%, 71%, 0.1),
+      hsla(320, 100%, 68%, 0.05),
+      hsla(340, 100%, 74%, 0.08)
+    );
+    backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 105, 180, 0.2);
+    box-shadow: 
+      0 8px 32px rgba(255, 105, 180, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all var(--transition-smooth);
+  }
+  
+  /* Romantic message bubbles */
+  .message-bubble-ai {
+    background: linear-gradient(135deg,
+      rgba(255, 105, 180, 0.08),
+      rgba(255, 20, 147, 0.05)
+    );
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    backdrop-filter: blur(16px);
+    transition: all var(--transition-smooth);
+  }
+  
+  .message-bubble-ai:hover {
+    background: linear-gradient(135deg,
+      rgba(255, 105, 180, 0.12),
+      rgba(255, 20, 147, 0.08)
+    );
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.2);
+  }
+  
+  .message-bubble-user {
+    background: linear-gradient(135deg,
+      hsl(var(--romantic)),
+      #ff69b4,
+      #ff1493
+    );
+    box-shadow: 0 4px 16px rgba(255, 105, 180, 0.3);
+    transition: all var(--transition-smooth);
+  }
+  
+  .message-bubble-user:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.4);
+  }
+  
+  /* AKSHITA name highlighting effect */
+  .akshita-highlight {
+    background: linear-gradient(90deg, 
+      #ff69b4, 
+      #ff1493, 
+      #ff69b4
+    );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: akshita-glow 3s ease-in-out infinite;
+    font-weight: 600;
+    text-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+  }
+  
+  @keyframes akshita-glow {
+    0%, 100% { 
+      background-position: 0% 50%;
+      filter: brightness(1);
+    }
+    50% { 
+      background-position: 100% 50%;
+      filter: brightness(1.2);
+    }
+  }
+  
+  /* Premium input field enhancements */
+  .premium-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 105, 180, 0.2);
+    backdrop-filter: blur(16px);
+    transition: all var(--transition-smooth);
+  }
+  
+  .premium-input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 105, 180, 0.4);
+    box-shadow: 
+      0 0 0 3px rgba(255, 105, 180, 0.1),
+      0 8px 20px rgba(255, 105, 180, 0.15);
+    transform: translateY(-1px);
+  }
+  
+  /* Heart particle effects for AKSHITA */
+  .heart-particle {
+    position: absolute;
+    font-size: 12px;
+    color: #ff69b4;
+    pointer-events: none;
+    animation: heartFloat 4s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes heartFloat {
+    0% {
+      transform: translateY(0) scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+      transform: translateY(-10px) scale(1) rotate(10deg);
+    }
+    90% {
+      opacity: 1;
+      transform: translateY(-60px) scale(1.2) rotate(-10deg);
+    }
+    100% {
+      transform: translateY(-80px) scale(0) rotate(20deg);
+      opacity: 0;
+    }
+  }
+  
+  /* Smooth scroll enhancements for chat */
+  .chat-scroll {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 105, 180, 0.3) transparent;
+  }
+  
+  .chat-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .chat-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .chat-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, 
+      rgba(255, 105, 180, 0.3), 
+      rgba(255, 20, 147, 0.3)
+    );
+    border-radius: 3px;
+  }
+  
+  .chat-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, 
+      rgba(255, 105, 180, 0.5), 
+      rgba(255, 20, 147, 0.5)
+    );
+  }
+  
+  /* Premium button micro-interactions */
+  .premium-button {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-smooth);
+  }
+  
+  .premium-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.2), 
+      transparent
+    );
+    transition: left var(--transition-normal);
+  }
+  
+  .premium-button:hover::before {
+    left: 100%;
+  }
+  
+  /* Romantic typing indicator */
+  .typing-romantic {
+    background: linear-gradient(-45deg, 
+      rgba(255, 105, 180, 0.1),
+      rgba(255, 20, 147, 0.1),
+      rgba(255, 105, 180, 0.1),
+      rgba(199, 21, 133, 0.1)
+    );
+    background-size: 400% 400%;
+    animation: romantic-gradient 3s ease infinite;
+  }
+  
+  @keyframes romantic-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Enhanced focus management */
+  .focus-romantic:focus {
+    outline: none;
+    box-shadow: 
+      0 0 0 3px rgba(255, 105, 180, 0.2),
+      0 8px 20px rgba(255, 105, 180, 0.15);
+  }
+  
+  /* AKSHITA's special attention animations */
+  .akshita-special {
+    animation: akshita-attention 2s ease-in-out infinite;
+  }
+  
+  @keyframes akshita-attention {
+    0%, 100% { 
+      transform: scale(1) rotate(0deg);
+      filter: brightness(1);
+    }
+    25% { 
+      transform: scale(1.05) rotate(1deg);
+      filter: brightness(1.1);
+    }
+    50% { 
+      transform: scale(1.02) rotate(0deg);
+      filter: brightness(1.05);
+    }
+    75% { 
+      transform: scale(1.05) rotate(-1deg);
+      filter: brightness(1.1);
+    }
+  }
+  
+  /* Prevent text selection in romantic UI elements */
+  .romantic-ui {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Ensure proper cursor for all interactive elements */
+  button, [role="button"], .clickable {
+    cursor: pointer !important;
+  }
+  
+  input, textarea, [contenteditable] {
+    cursor: text !important;
+  }
+  
+  /* High-performance animations for AKSHITA */
+  .akshita-performance {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translateZ(0);
+  }
 }

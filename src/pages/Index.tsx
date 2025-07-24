@@ -13,8 +13,8 @@ import { Enhanced3DEffects } from '@/components/Enhanced3DEffects';
 import { VoiceNavigation } from '@/components/VoiceNavigation';
 import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
-import { StunningLightningBackground } from '@/components/StunningLightningBackground';
-import { AdaptiveCursor } from '@/components/AdaptiveCursor';
+import { ReactBitsLightning } from '@/components/ReactBitsLightning';
+import { DynamicCursor } from '@/components/DynamicCursor';
 import { MemoryEditModal } from '@/components/MemoryEditModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Edit, Heart, MapPin, Calendar } from 'lucide-react';
@@ -239,8 +239,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
-      {/* Adaptive Cursor - Global */}
-      <AdaptiveCursor />
+      {/* Dynamic Cursor - Global */}
+      <DynamicCursor />
 
       {/* The HeroSection now includes its own AkshitaDynamicBackground */}
       {/* Keep Enhanced3DEffects for other sections if needed */}
@@ -353,10 +353,10 @@ const Index = () => {
           />
         </div>
 
-        {/* Our Beautiful Memories Section with Lightning Background */}
+        {/* Our Beautiful Memories Section with ReactBits Lightning Background */}
         <div id="memories" className="min-h-screen relative" data-background="dark">
-          {/* Lightning Background */}
-          <StunningLightningBackground 
+          {/* ReactBits Lightning Background */}
+          <ReactBitsLightning 
             intensity="medium"
             isActive={true}
             className="lightning-background"
@@ -384,20 +384,53 @@ const Index = () => {
                 {memories.map((memory, index) => (
                   <motion.div
                     key={memory.id}
-                    className="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+                    className="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 memory-card"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.6 }}
                     whileHover={{ scale: 1.05, y: -10 }}
+                    data-interactive
                   >
-                    {/* Edit Button */}
+                    {/* Enhanced Edit Me Button */}
                     <motion.button
                       onClick={() => handleEditMemory(memory)}
-                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-2 transition-all duration-300"
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      whileTap={{ scale: 0.95 }}
+                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/40 hover:to-blue-500/40 backdrop-blur-sm rounded-full p-3 transition-all duration-500 border border-cyan-400/30 hover:border-cyan-400/60"
+                      whileHover={{ 
+                        scale: 1.15, 
+                        rotate: 10,
+                        boxShadow: "0 0 20px rgba(0, 212, 255, 0.4)"
+                      }}
+                      whileTap={{ scale: 0.9 }}
+                      initial={{ rotate: -10, scale: 0.8 }}
+                      animate={{ rotate: 0, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     >
-                      <Edit className="w-4 h-4 text-white" />
+                      <Edit className="w-4 h-4 text-cyan-300" />
+                      
+                      {/* Edit Me Tooltip */}
+                      <motion.div
+                        className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-cyan-500/90 text-white text-xs px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none"
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        Edit Me
+                        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-b-2 border-transparent border-b-cyan-500/90"></div>
+                      </motion.div>
+                      
+                      {/* Electric glow effect */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-cyan-400/20"
+                        animate={{
+                          scale: [1, 1.3, 1],
+                          opacity: [0, 0.6, 0]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
                     </motion.button>
 
                     {/* Memory Photos */}
@@ -472,10 +505,10 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Our Romantic Songs Section with Lightning Background */}
+        {/* Our Romantic Songs Section with ReactBits Lightning Background */}
         <div id="music" className="min-h-screen relative" data-background="dark">
-          {/* Lightning Background */}
-          <StunningLightningBackground 
+          {/* ReactBits Lightning Background */}
+          <ReactBitsLightning 
             intensity="high"
             color="#ff6b9d"
             isActive={true}

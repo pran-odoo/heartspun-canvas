@@ -404,46 +404,76 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
       drawNebula(ctx, nebula, time);
     });
 
-    // Update stars with LIVING MOVEMENT
+    // Update stars with LIVING MOVEMENT AND WORKING HOVER INTERACTION
     stars.forEach(star => {
       // Calculate distance from mouse for interaction
       const dx = star.x - mousePosition.x;
       const dy = star.y - mousePosition.y;
       star.distanceFromMouse = Math.sqrt(dx * dx + dy * dy);
       
-      // Mouse repulsion effect
-      const mouseInfluenceRadius = 150;
+      // Enhanced mouse repulsion effect that works WITH movement
+      const mouseInfluenceRadius = 180;
       let mouseForceX = 0;
       let mouseForceY = 0;
       
-      if (star.distanceFromMouse < mouseInfluenceRadius && isMouseMoving) {
+      if (star.distanceFromMouse < mouseInfluenceRadius) {
         const force = (mouseInfluenceRadius - star.distanceFromMouse) / mouseInfluenceRadius;
         const angle = Math.atan2(dy, dx);
-        mouseForceX = Math.cos(angle) * force * 0.5;
-        mouseForceY = Math.sin(angle) * force * 0.5;
+        
+        // Stronger repulsion when mouse is moving
+        const repulsionStrength = isMouseMoving ? 2.5 : 1.5;
+        mouseForceX = Math.cos(angle) * force * repulsionStrength;
+        mouseForceY = Math.sin(angle) * force * repulsionStrength;
+        
+        // Add momentum to the repulsion for natural feel
+        star.speedX += mouseForceX * 0.1;
+        star.speedY += mouseForceY * 0.1;
+        
+        // Limit speed to prevent stars from flying off screen
+        const maxSpeed = 1.5;
+        star.speedX = Math.max(-maxSpeed, Math.min(maxSpeed, star.speedX));
+        star.speedY = Math.max(-maxSpeed, Math.min(maxSpeed, star.speedY));
+      } else {
+        // Gradually return to original speed when away from mouse
+        star.speedX = star.speedX * 0.98 + star.originalSpeed * 0.02 * (Math.random() - 0.5);
+        star.speedY = star.speedY * 0.98 + star.originalSpeed * 0.01 * (Math.random() - 0.5);
       }
       
-      // CONTINUOUS AMBIENT DRIFT - This is what makes stars ALIVE
-      star.x += star.speedX + mouseForceX;
-      star.y += star.speedY + mouseForceY;
+      // CONTINUOUS AMBIENT DRIFT with immediate mouse influence
+      star.x += star.speedX + mouseForceX * 0.5;
+      star.y += star.speedY + mouseForceY * 0.5;
       
-      // Add subtle orbital motion for organic feel
-      star.x += Math.sin(time * 0.0001 + star.twinklePhase) * star.originalSpeed * 0.3;
-      star.y += Math.cos(time * 0.0001 + star.twinklePhase) * star.originalSpeed * 0.2;
+      // Add subtle orbital motion for organic feel (reduced when mouse nearby)
+      const orbitalInfluence = star.distanceFromMouse > mouseInfluenceRadius ? 1 : 0.3;
+      star.x += Math.sin(time * 0.0001 + star.twinklePhase) * star.originalSpeed * 0.3 * orbitalInfluence;
+      star.y += Math.cos(time * 0.0001 + star.twinklePhase) * star.originalSpeed * 0.2 * orbitalInfluence;
       
       // Smooth wrapping at screen edges
       const wrapBuffer = 100;
-      if (star.x < -wrapBuffer) star.x = canvas.width + wrapBuffer;
-      if (star.x > canvas.width + wrapBuffer) star.x = -wrapBuffer;
-      if (star.y < -wrapBuffer) star.y = canvas.height + wrapBuffer;
-      if (star.y > canvas.height + wrapBuffer) star.y = -wrapBuffer;
+      if (star.x < -wrapBuffer) {
+        star.x = canvas.width + wrapBuffer;
+        star.speedX = Math.abs(star.speedX); // Reset speed direction
+      }
+      if (star.x > canvas.width + wrapBuffer) {
+        star.x = -wrapBuffer;
+        star.speedX = -Math.abs(star.speedX); // Reset speed direction
+      }
+      if (star.y < -wrapBuffer) {
+        star.y = canvas.height + wrapBuffer;
+        star.speedY = Math.abs(star.speedY); // Reset speed direction
+      }
+      if (star.y > canvas.height + wrapBuffer) {
+        star.y = -wrapBuffer;
+        star.speedY = -Math.abs(star.speedY); // Reset speed direction
+      }
       
-      // Dynamic opacity based on mouse interaction
-      const targetOpacity = star.distanceFromMouse < mouseInfluenceRadius && isMouseMoving
-        ? star.baseOpacity * 1.3
+      // Enhanced dynamic opacity and size based on mouse interaction
+      const proximityFactor = Math.max(0, 1 - (star.distanceFromMouse / mouseInfluenceRadius));
+      const targetOpacity = star.distanceFromMouse < mouseInfluenceRadius
+        ? star.baseOpacity * (1.5 + proximityFactor * 0.8)
         : star.baseOpacity;
       
-      star.currentOpacity += (targetOpacity - star.currentOpacity) * 0.05;
+      star.currentOpacity += (targetOpacity - star.currentOpacity) * 0.08;
     });
 
     // Draw stars by layer (back to front) for proper depth

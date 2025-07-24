@@ -1,42 +1,56 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Ultra-Advanced Romantic Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    /* Morning Theme - Soft and Golden */
+    --background: 41 100% 98%;
+    --foreground: 340 15% 15%;
+    
+    /* Premium Romantic Colors */
+    --primary: 315 100% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 315 100% 65%;
+    --primary-deep: 315 80% 25%;
+    
+    --secondary: 25 100% 85%;
+    --secondary-foreground: 340 15% 15%;
+    
+    --accent: 340 100% 85%;
+    --accent-foreground: 315 100% 25%;
+    
+    --romantic: 330 100% 70%;
+    --romantic-soft: 330 50% 90%;
+    --romantic-deep: 330 80% 35%;
+    
+    --gold: 45 100% 70%;
+    --gold-soft: 45 50% 95%;
+    --gold-deep: 45 80% 45%;
+    
+    --glass: 0 0% 100%;
+    --glass-border: 0 0% 100%;
+    
+    --muted: 330 20% 95%;
+    --muted-foreground: 340 15% 45%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 340 15% 15%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 340 15% 15%;
+    
+    --border: 330 30% 90%;
+    --input: 330 30% 95%;
+    --ring: 315 100% 45%;
+    
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -55,43 +69,98 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  /* Evening Theme - Deep and Romantic */
+  .evening {
+    --background: 260 50% 8%;
+    --foreground: 330 50% 95%;
+    
+    --primary: 315 100% 65%;
+    --primary-glow: 315 100% 85%;
+    --primary-deep: 315 80% 35%;
+    
+    --secondary: 260 30% 20%;
+    --secondary-foreground: 330 50% 95%;
+    
+    --accent: 330 80% 75%;
+    --accent-foreground: 260 50% 8%;
+    
+    --romantic: 315 100% 75%;
+    --romantic-soft: 315 30% 25%;
+    --romantic-deep: 315 80% 45%;
+    
+    --gold: 45 100% 85%;
+    --gold-soft: 45 20% 15%;
+    --gold-deep: 45 80% 65%;
+    
+    --glass: 315 30% 15%;
+    --glass-border: 315 50% 40%;
+    
+    --muted: 260 20% 15%;
+    --muted-foreground: 330 30% 70%;
+    
+    --card: 260 30% 12%;
+    --card-foreground: 330 50% 95%;
+    
+    --border: 315 30% 25%;
+    --input: 260 30% 15%;
+    --ring: 315 100% 65%;
   }
+
+  /* Night Theme - Mystical and Deep */
+  .night {
+    --background: 240 100% 3%;
+    --foreground: 280 30% 90%;
+    
+    --primary: 280 100% 70%;
+    --primary-glow: 280 100% 85%;
+    --primary-deep: 280 80% 40%;
+    
+    --secondary: 240 40% 10%;
+    --secondary-foreground: 280 30% 90%;
+    
+    --accent: 280 80% 80%;
+    --accent-foreground: 240 100% 3%;
+    
+    --romantic: 280 100% 75%;
+    --romantic-soft: 280 20% 15%;
+    --romantic-deep: 280 80% 50%;
+    
+    --gold: 60 100% 80%;
+    --gold-soft: 60 20% 10%;
+    --gold-deep: 60 80% 60%;
+    
+    --glass: 280 20% 8%;
+    --glass-border: 280 40% 30%;
+    
+    --muted: 240 30% 8%;
+    --muted-foreground: 280 20% 70%;
+    
+    --card: 240 40% 6%;
+    --card-foreground: 280 30% 90%;
+    
+    --border: 280 30% 20%;
+    --input: 240 30% 8%;
+    --ring: 280 100% 70%;
+  }
+
+  /* Premium Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  --gradient-romantic: linear-gradient(135deg, hsl(var(--romantic)), hsl(var(--romantic-soft)));
+  --gradient-gold: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-deep)));
+  --gradient-glass: linear-gradient(135deg, hsl(var(--glass) / 0.1), hsl(var(--glass) / 0.05));
+  --gradient-mesh: radial-gradient(circle at 20% 80%, hsl(var(--primary) / 0.3) 0%, transparent 50%), 
+                   radial-gradient(circle at 80% 20%, hsl(var(--romantic) / 0.2) 0%, transparent 50%), 
+                   radial-gradient(circle at 40% 40%, hsl(var(--gold) / 0.1) 0%, transparent 50%);
+  
+  /* Glassmorphism Shadows */
+  --shadow-glass: 0 8px 32px hsl(var(--primary) / 0.1), 0 0 0 1px hsl(var(--glass-border) / 0.1);
+  --shadow-romantic: 0 20px 40px hsl(var(--romantic) / 0.2), 0 0 60px hsl(var(--romantic) / 0.1);
+  --shadow-gold: 0 10px 30px hsl(var(--gold) / 0.3), 0 0 80px hsl(var(--gold) / 0.1);
+  
+  /* Advanced Animations */
+  --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-elastic: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @layer base {
@@ -100,6 +169,209 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .font-romantic {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  /* Glassmorphism Components */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--glass-border) / 0.2);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-romantic {
+    background: linear-gradient(135deg, hsl(var(--romantic) / 0.1), hsl(var(--romantic) / 0.05));
+    backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid hsl(var(--romantic) / 0.2);
+    box-shadow: var(--shadow-romantic);
+  }
+
+  .glass-gold {
+    background: linear-gradient(135deg, hsl(var(--gold) / 0.1), hsl(var(--gold) / 0.05));
+    backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid hsl(var(--gold) / 0.3);
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* Floating Elements */
+  .floating {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .floating-delayed {
+    animation: float 8s ease-in-out infinite 2s;
+  }
+
+  /* Interactive Elements */
+  .hover-lift {
+    transition: var(--transition-smooth);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px hsl(var(--primary) / 0.15);
+  }
+
+  .cursor-trail {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: hsl(var(--romantic));
+    pointer-events: none;
+    z-index: 9999;
+    animation: sparkle 1.5s ease-out forwards;
+  }
+
+  /* Morphing Backgrounds */
+  .morphing-bg {
+    background: var(--gradient-mesh);
+    animation: morphBackground 20s ease-in-out infinite;
+  }
+
+  /* Particle Container */
+  .particle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .heart-particle {
+    color: hsl(var(--romantic));
+    font-size: 12px;
+    animation: heartFloat 4s ease-out forwards;
+  }
+
+  .star-particle {
+    background: hsl(var(--gold));
+    width: 2px;
+    height: 2px;
+    animation: starTwinkle 3s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  /* Advanced Keyframes */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(1deg); }
+    66% { transform: translateY(-10px) rotate(-1deg); }
+  }
+
+  @keyframes sparkle {
+    0% { 
+      opacity: 1; 
+      transform: scale(0) rotate(0deg); 
+    }
+    50% { 
+      opacity: 1; 
+      transform: scale(1) rotate(180deg); 
+    }
+    100% { 
+      opacity: 0; 
+      transform: scale(0) rotate(360deg); 
+    }
+  }
+
+  @keyframes morphBackground {
+    0%, 100% { 
+      background-position: 0% 50%; 
+      filter: hue-rotate(0deg);
+    }
+    25% { 
+      background-position: 100% 50%; 
+      filter: hue-rotate(90deg);
+    }
+    50% { 
+      background-position: 100% 100%; 
+      filter: hue-rotate(180deg);
+    }
+    75% { 
+      background-position: 0% 100%; 
+      filter: hue-rotate(270deg);
+    }
+  }
+
+  @keyframes heartFloat {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(0) rotate(0deg);
+    }
+    20% {
+      opacity: 1;
+      transform: translateY(-20px) scale(1) rotate(10deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-200px) scale(0.5) rotate(30deg);
+    }
+  }
+
+  @keyframes starTwinkle {
+    0%, 100% { 
+      opacity: 0.3; 
+      transform: scale(1) rotate(0deg); 
+    }
+    50% { 
+      opacity: 1; 
+      transform: scale(1.5) rotate(180deg); 
+    }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes pulse-romantic {
+    0%, 100% { 
+      box-shadow: 0 0 0 0 hsl(var(--romantic) / 0.7); 
+    }
+    70% { 
+      box-shadow: 0 0 0 20px hsl(var(--romantic) / 0); 
+    }
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Time-based animations */
+  .morning-rays {
+    animation: gradient-shift 15s ease-in-out infinite;
+    background: linear-gradient(-45deg, hsl(var(--gold)), hsl(var(--gold-soft)), hsl(var(--romantic-soft)), hsl(var(--primary-glow)));
+    background-size: 400% 400%;
+  }
+
+  .evening-glow {
+    animation: pulse-romantic 4s ease-in-out infinite;
+  }
+
+  .night-aurora {
+    animation: gradient-shift 20s ease-in-out infinite, shimmer 8s ease-in-out infinite;
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--romantic)), hsl(var(--accent)), hsl(var(--primary)));
+    background-size: 300% 100%;
   }
 }

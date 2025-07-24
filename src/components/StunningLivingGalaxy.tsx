@@ -16,14 +16,18 @@ interface Star {
   y: number;
   z: number;
   size: number;
-  speed: number;
+  speedX: number;
+  speedY: number;
   twinklePhase: number;
   twinkleSpeed: number;
   color: string;
   brightness: number;
   layer: number;
-  originalX: number;
-  originalY: number;
+  baseOpacity: number;
+  currentOpacity: number;
+  rotationSpeed: number;
+  distanceFromMouse: number;
+  originalSpeed: number;
 }
 
 interface Nebula {
@@ -34,8 +38,10 @@ interface Nebula {
   color: string;
   opacity: number;
   rotation: number;
-  speed: number;
+  speedX: number;
+  speedY: number;
   pulsePhase: number;
+  pulseSpeed: number;
 }
 
 interface Particle {
@@ -48,6 +54,7 @@ interface Particle {
   maxLife: number;
   size: number;
   color: string;
+  opacity: number;
 }
 
 // SOPHISTICATED COLOR PALETTE FOR PERFECT HARMONY
@@ -123,6 +130,13 @@ const COHESIVE_COLOR_SCHEME = {
   }
 };
 
+// Star layer configuration for different movement speeds
+const STAR_LAYERS = [
+  { speed: 0.08, size: 'small', opacity: 0.4, count: 0.4 },     // Background stars (slowest)
+  { speed: 0.15, size: 'medium', opacity: 0.7, count: 0.4 },    // Mid-layer stars
+  { speed: 0.25, size: 'large', opacity: 1.0, count: 0.2 }      // Foreground stars (fastest)
+];
+
 export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
   theme,
   isDarkMode = false,
@@ -134,8 +148,11 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
   const animationRef = useRef<number>();
   const timeRef = useRef(0);
   const mouseTrailRef = useRef<Particle[]>([]);
+  const galaxyRotationRef = useRef(0);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMouseMoving, setIsMouseMoving] = useState(false);
+  const [stars, setStars] = useState<Star[]>([]);
+  const [nebulas, setNebulas] = useState<Nebula[]>([]);
 
   // Use the backdrop filter cleanup hook
   useBackdropFilterCleanup();
@@ -143,156 +160,184 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
   // Memoized color scheme
   const colors = useMemo(() => COHESIVE_COLOR_SCHEME[theme], [theme]);
 
-  // Generate stars with proper keys and layered depth
-  const stars = useMemo(() => {
-    const starCount = Math.min(1200, Math.max(600, Math.floor((dimensions.width * dimensions.height) / 2000)));
+  // Generate living stars with movement vectors
+  const generateStars = useCallback((width: number, height: number) => {
+    const starCount = Math.min(1500, Math.max(800, Math.floor((width * height) / 1800)));
     const newStars: Star[] = [];
 
     for (let i = 0; i < starCount; i++) {
-      const layer = Math.floor(Math.random() * 3); // 3 depth layers
-      const x = Math.random() * dimensions.width;
-      const y = Math.random() * dimensions.height;
+      const layerIndex = Math.random() < 0.4 ? 0 : Math.random() < 0.7 ? 1 : 2;
+      const layer = STAR_LAYERS[layerIndex];
+      const x = Math.random() * (width + 200) - 100; // Extended bounds for smooth wrapping
+      const y = Math.random() * (height + 200) - 100;
+      
+      // Generate natural movement speeds
+      const baseSpeed = layer.speed;
+      const speedVariation = baseSpeed * 0.5;
+      const speedX = (Math.random() - 0.5) * baseSpeed + (Math.random() - 0.5) * speedVariation;
+      const speedY = (Math.random() - 0.5) * baseSpeed * 0.3 + (Math.random() - 0.5) * speedVariation * 0.3;
       
       newStars.push({
-        id: `star-${i}-${Date.now()}`, // Unique key
+        id: `star-${i}-${Date.now()}`,
         x,
         y,
-        z: 100 + layer * 300, // Depth layers
-        size: (Math.random() * 2 + 0.5) * (3 - layer), // Larger stars in front
-        speed: (Math.random() * 0.5 + 0.1) * (layer + 1), // Different speeds per layer
+        z: 100 + layerIndex * 300,
+        size: (Math.random() * 1.5 + 0.5) * (layerIndex === 0 ? 0.8 : layerIndex === 1 ? 1.2 : 1.8),
+        speedX,
+        speedY,
         twinklePhase: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * 0.02 + 0.01,
+        twinkleSpeed: Math.random() * 0.03 + 0.01,
         color: [colors.stars.primary, colors.stars.secondary, colors.stars.accent, colors.stars.twinkle][Math.floor(Math.random() * 4)],
-        brightness: Math.random() * 0.8 + 0.2,
-        layer,
-        originalX: x,
-        originalY: y
+        brightness: Math.random() * 0.6 + 0.4,
+        layer: layerIndex,
+        baseOpacity: layer.opacity * (Math.random() * 0.4 + 0.6),
+        currentOpacity: layer.opacity * (Math.random() * 0.4 + 0.6),
+        rotationSpeed: (Math.random() - 0.5) * 0.02,
+        distanceFromMouse: 0,
+        originalSpeed: baseSpeed
       });
     }
 
     return newStars;
-  }, [dimensions.width, dimensions.height, colors.stars]);
+  }, [colors.stars]);
 
-  // Generate nebula clouds
-  const nebulas = useMemo(() => {
-    const nebulaCount = 8;
+  // Generate living nebula clouds
+  const generateNebulas = useCallback((width: number, height: number) => {
+    const nebulaCount = 12;
     const newNebulas: Nebula[] = [];
 
     for (let i = 0; i < nebulaCount; i++) {
       newNebulas.push({
-        id: `nebula-${i}-${Date.now()}`, // Unique key
-        x: Math.random() * dimensions.width,
-        y: Math.random() * dimensions.height,
-        size: Math.random() * 800 + 400,
+        id: `nebula-${i}-${Date.now()}`,
+        x: Math.random() * (width + 400) - 200,
+        y: Math.random() * (height + 400) - 200,
+        size: Math.random() * 600 + 300,
         color: [colors.nebula.primary, colors.nebula.secondary, colors.nebula.accent][Math.floor(Math.random() * 3)],
-        opacity: Math.random() * 0.3 + 0.1,
+        opacity: Math.random() * 0.25 + 0.05,
         rotation: Math.random() * 360,
-        speed: Math.random() * 0.3 + 0.1,
-        pulsePhase: Math.random() * Math.PI * 2
+        speedX: (Math.random() - 0.5) * 0.02,
+        speedY: (Math.random() - 0.5) * 0.02,
+        pulsePhase: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.015 + 0.005
       });
     }
 
     return newNebulas;
-  }, [dimensions.width, dimensions.height, colors.nebula]);
+  }, [colors.nebula]);
 
-  // Mouse interaction effects
-  const handleMouseMovement = useCallback(() => {
+  // Initialize stars and nebulas when dimensions change
+  useEffect(() => {
+    if (dimensions.width > 0 && dimensions.height > 0) {
+      setStars(generateStars(dimensions.width, dimensions.height));
+      setNebulas(generateNebulas(dimensions.width, dimensions.height));
+    }
+  }, [dimensions, generateStars, generateNebulas]);
+
+  // Mouse movement detection
+  useEffect(() => {
     setIsMouseMoving(true);
     const timeout = setTimeout(() => setIsMouseMoving(false), 150);
     return () => clearTimeout(timeout);
-  }, []);
+  }, [mousePosition]);
 
-  useEffect(() => {
-    handleMouseMovement();
-  }, [mousePosition, handleMouseMovement]);
-
-  // Canvas drawing functions
+  // Enhanced star drawing with twinkling and glow
   const drawStar = useCallback((
     ctx: CanvasRenderingContext2D,
     star: Star,
     time: number,
     mouseInfluence: number
   ) => {
-    // Calculate twinkling effect
-    const twinkle = Math.sin(star.twinklePhase + time * star.twinkleSpeed) * 0.5 + 0.5;
-    const brightness = star.brightness * (0.5 + twinkle * 0.5);
+    const twinkle = Math.sin(time * star.twinkleSpeed + star.twinklePhase) * 0.3 + 0.7;
+    const finalOpacity = star.currentOpacity * twinkle * star.brightness;
     
-    // Calculate mouse repulsion effect
-    const dx = star.x - mousePosition.x;
-    const dy = star.y - mousePosition.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const repulsionRadius = 150;
-    
-    let offsetX = 0;
-    let offsetY = 0;
-    if (distance < repulsionRadius && mouseInfluence > 0) {
-      const force = (repulsionRadius - distance) / repulsionRadius;
-      offsetX = (dx / distance) * force * 30 * mouseInfluence;
-      offsetY = (dy / distance) * force * 30 * mouseInfluence;
-    }
+    if (finalOpacity < 0.05) return;
 
-    const finalX = star.x + offsetX;
-    const finalY = star.y + offsetY;
-
-    // Draw star with proper glow effect
     ctx.save();
-    ctx.globalAlpha = brightness;
     
-    // Outer glow
-    const gradient = ctx.createRadialGradient(finalX, finalY, 0, finalX, finalY, star.size * 3);
-    gradient.addColorStop(0, star.color);
-    gradient.addColorStop(0.3, star.color.replace('rgb', 'rgba').replace(')', ', 0.5)'));
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    // Glow effect for larger stars
+    if (star.size > 1.2) {
+      const glowRadius = star.size * 4 * (1 + mouseInfluence * 0.3);
+      const glowGradient = ctx.createRadialGradient(
+        star.x, star.y, 0,
+        star.x, star.y, glowRadius
+      );
+      glowGradient.addColorStop(0, star.color + Math.floor(finalOpacity * 100).toString(16).padStart(2, '0'));
+      glowGradient.addColorStop(0.3, star.color + Math.floor(finalOpacity * 40).toString(16).padStart(2, '0'));
+      glowGradient.addColorStop(1, 'transparent');
+      
+      ctx.fillStyle = glowGradient;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, glowRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
     
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(finalX, finalY, star.size * 3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Inner bright core
+    // Main star body
+    ctx.globalAlpha = finalOpacity;
     ctx.fillStyle = star.color;
+    
+    // Add subtle rotation for visual interest
+    if (star.size > 1) {
+      ctx.translate(star.x, star.y);
+      ctx.rotate(time * star.rotationSpeed);
+      ctx.translate(-star.x, -star.y);
+    }
+    
     ctx.beginPath();
-    ctx.arc(finalX, finalY, star.size, 0, Math.PI * 2);
+    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Bright core for larger stars
+    if (star.size > 1.5) {
+      ctx.globalAlpha = finalOpacity * 1.2;
+      ctx.fillStyle = colors.stars.primary;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
     
     ctx.restore();
-  }, [mousePosition]);
+  }, [colors.stars.primary]);
 
+  // Enhanced nebula drawing with movement
   const drawNebula = useCallback((
     ctx: CanvasRenderingContext2D,
     nebula: Nebula,
     time: number
   ) => {
-    const pulse = Math.sin(nebula.pulsePhase + time * 0.001) * 0.2 + 0.8;
+    const pulse = Math.sin(time * nebula.pulseSpeed + nebula.pulsePhase) * 0.3 + 0.7;
+    const finalOpacity = nebula.opacity * pulse;
     
     ctx.save();
-    ctx.globalAlpha = nebula.opacity * pulse;
-    ctx.filter = 'blur(40px)';
+    ctx.globalAlpha = finalOpacity;
     
+    // Create nebula gradient
     const gradient = ctx.createRadialGradient(
       nebula.x, nebula.y, 0,
       nebula.x, nebula.y, nebula.size
     );
     gradient.addColorStop(0, nebula.color);
-    gradient.addColorStop(0.5, nebula.color.replace(/[\d.]+\)/, '0.05)'));
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    gradient.addColorStop(0.4, nebula.color.replace(/[\d\.]+\)$/, '0.05)'));
+    gradient.addColorStop(1, 'transparent');
     
     ctx.fillStyle = gradient;
+    ctx.translate(nebula.x, nebula.y);
+    ctx.rotate((nebula.rotation + time * 0.001) * Math.PI / 180);
+    ctx.scale(1 + Math.sin(time * 0.0008) * 0.1, 1 + Math.cos(time * 0.0006) * 0.1);
+    
     ctx.beginPath();
-    ctx.arc(nebula.x, nebula.y, nebula.size, 0, Math.PI * 2);
+    ctx.arc(0, 0, nebula.size, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.restore();
   }, []);
 
-  const drawMouseTrail = useCallback((
-    ctx: CanvasRenderingContext2D,
-    particles: Particle[]
-  ) => {
+  // Mouse trail particle drawing
+  const drawMouseTrail = useCallback((ctx: CanvasRenderingContext2D, particles: Particle[]) => {
     particles.forEach(particle => {
-      const alpha = particle.life / particle.maxLife;
+      const alpha = (particle.life / particle.maxLife) * particle.opacity;
+      
       ctx.save();
-      ctx.globalAlpha = alpha * 0.6;
+      ctx.globalAlpha = alpha;
       
       const gradient = ctx.createRadialGradient(
         particle.x, particle.y, 0,
@@ -310,7 +355,7 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
     });
   }, []);
 
-  // Animation loop
+  // MAIN ANIMATION LOOP WITH LIVING STAR MOVEMENT
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !isActive) return;
@@ -320,64 +365,112 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
 
     timeRef.current += 16; // ~60fps
     const time = timeRef.current;
+    
+    // Update galaxy rotation
+    galaxyRotationRef.current += 0.0002; // Very slow rotation
 
-    // Clear canvas with gradient background
+    // Clear canvas with animated gradient background
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    const rotationOffset = Math.sin(time * 0.0001) * 0.1;
     gradient.addColorStop(0, colors.background.primary);
-    gradient.addColorStop(0.5, colors.background.secondary);
+    gradient.addColorStop(0.5 + rotationOffset, colors.background.secondary);
     gradient.addColorStop(1, colors.background.accent);
     
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw nebulas first (background layer)
+    // Apply slow galaxy rotation
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(galaxyRotationRef.current);
+    ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+    // Update and draw nebulas with movement
     nebulas.forEach(nebula => {
-      // Slow rotation and drift
-      nebula.x += Math.sin(time * 0.0001 + nebula.rotation) * nebula.speed * 0.1;
-      nebula.y += Math.cos(time * 0.0001 + nebula.rotation) * nebula.speed * 0.1;
+      // Continuous drift movement
+      nebula.x += nebula.speedX;
+      nebula.y += nebula.speedY;
       
-      // Wrap around edges
-      if (nebula.x < -nebula.size) nebula.x = canvas.width + nebula.size;
-      if (nebula.x > canvas.width + nebula.size) nebula.x = -nebula.size;
-      if (nebula.y < -nebula.size) nebula.y = canvas.height + nebula.size;
-      if (nebula.y > canvas.height + nebula.size) nebula.y = -nebula.size;
+      // Add subtle orbital motion
+      nebula.x += Math.sin(time * 0.0001 + nebula.pulsePhase) * 0.02;
+      nebula.y += Math.cos(time * 0.0001 + nebula.pulsePhase) * 0.02;
+      
+      // Wrap around edges with buffer
+      if (nebula.x < -nebula.size - 200) nebula.x = canvas.width + nebula.size + 200;
+      if (nebula.x > canvas.width + nebula.size + 200) nebula.x = -nebula.size - 200;
+      if (nebula.y < -nebula.size - 200) nebula.y = canvas.height + nebula.size + 200;
+      if (nebula.y > canvas.height + nebula.size + 200) nebula.y = -nebula.size - 200;
       
       drawNebula(ctx, nebula, time);
     });
 
-    // Mouse influence
-    const mouseInfluence = isMouseMoving ? 1 : 0;
+    // Update stars with LIVING MOVEMENT
+    stars.forEach(star => {
+      // Calculate distance from mouse for interaction
+      const dx = star.x - mousePosition.x;
+      const dy = star.y - mousePosition.y;
+      star.distanceFromMouse = Math.sqrt(dx * dx + dy * dy);
+      
+      // Mouse repulsion effect
+      const mouseInfluenceRadius = 150;
+      let mouseForceX = 0;
+      let mouseForceY = 0;
+      
+      if (star.distanceFromMouse < mouseInfluenceRadius && isMouseMoving) {
+        const force = (mouseInfluenceRadius - star.distanceFromMouse) / mouseInfluenceRadius;
+        const angle = Math.atan2(dy, dx);
+        mouseForceX = Math.cos(angle) * force * 0.5;
+        mouseForceY = Math.sin(angle) * force * 0.5;
+      }
+      
+      // CONTINUOUS AMBIENT DRIFT - This is what makes stars ALIVE
+      star.x += star.speedX + mouseForceX;
+      star.y += star.speedY + mouseForceY;
+      
+      // Add subtle orbital motion for organic feel
+      star.x += Math.sin(time * 0.0001 + star.twinklePhase) * star.originalSpeed * 0.3;
+      star.y += Math.cos(time * 0.0001 + star.twinklePhase) * star.originalSpeed * 0.2;
+      
+      // Smooth wrapping at screen edges
+      const wrapBuffer = 100;
+      if (star.x < -wrapBuffer) star.x = canvas.width + wrapBuffer;
+      if (star.x > canvas.width + wrapBuffer) star.x = -wrapBuffer;
+      if (star.y < -wrapBuffer) star.y = canvas.height + wrapBuffer;
+      if (star.y > canvas.height + wrapBuffer) star.y = -wrapBuffer;
+      
+      // Dynamic opacity based on mouse interaction
+      const targetOpacity = star.distanceFromMouse < mouseInfluenceRadius && isMouseMoving
+        ? star.baseOpacity * 1.3
+        : star.baseOpacity;
+      
+      star.currentOpacity += (targetOpacity - star.currentOpacity) * 0.05;
+    });
 
-    // Update and draw stars by layer (back to front)
+    // Draw stars by layer (back to front) for proper depth
     for (let layer = 2; layer >= 0; layer--) {
       stars.filter(star => star.layer === layer).forEach(star => {
-        // Gentle drift motion
-        star.x += Math.sin(time * 0.0001 + star.id.length) * star.speed * 0.2;
-        star.y += Math.cos(time * 0.0001 + star.id.length) * star.speed * 0.2;
-        
-        // Wrap around edges
-        if (star.x < -50) star.x = canvas.width + 50;
-        if (star.x > canvas.width + 50) star.x = -50;
-        if (star.y < -50) star.y = canvas.height + 50;
-        if (star.y > canvas.height + 50) star.y = -50;
-        
-        drawStar(ctx, star, time, mouseInfluence);
+        drawStar(ctx, star, time, isMouseMoving ? 1 : 0);
       });
     }
 
-    // Add mouse trail particles
+    ctx.restore(); // Restore from galaxy rotation
+
+    // Add mouse trail particles for interactivity
     if (isMouseMoving) {
-      mouseTrailRef.current.push({
-        id: `particle-${Date.now()}-${Math.random()}`,
-        x: mousePosition.x + (Math.random() - 0.5) * 20,
-        y: mousePosition.y + (Math.random() - 0.5) * 20,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        life: 60,
-        maxLife: 60,
-        size: Math.random() * 8 + 2,
-        color: colors.akshita.glow
-      });
+      for (let i = 0; i < 3; i++) {
+        mouseTrailRef.current.push({
+          id: `particle-${Date.now()}-${Math.random()}`,
+          x: mousePosition.x + (Math.random() - 0.5) * 30,
+          y: mousePosition.y + (Math.random() - 0.5) * 30,
+          vx: (Math.random() - 0.5) * 3,
+          vy: (Math.random() - 0.5) * 3,
+          life: 80,
+          maxLife: 80,
+          size: Math.random() * 6 + 2,
+          color: colors.akshita.glow,
+          opacity: 0.8
+        });
+      }
     }
 
     // Update and draw mouse trail
@@ -426,6 +519,9 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.scale(dpr, dpr);
+      // Enable smooth rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
     }
 
     // Preserve this element from blur cleanup
@@ -434,7 +530,7 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
 
   // Start animation
   useEffect(() => {
-    if (isActive) {
+    if (isActive && stars.length > 0) {
       animationRef.current = requestAnimationFrame(animate);
     }
 
@@ -443,64 +539,42 @@ export const StunningLivingGalaxy: React.FC<StunningLivingGalaxyProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isActive, animate]);
+  }, [isActive, animate, stars.length]);
 
   return (
     <div 
-      className={`fixed inset-0 z-0 overflow-hidden ${className}`}
+      className={`fixed inset-0 z-0 overflow-hidden pointer-events-none ${className}`}
       style={{ 
         isolation: 'isolate',
-        contain: 'layout style paint'
+        contain: 'layout style paint',
+        transform: 'translateZ(0)' // Hardware acceleration
       }}
     >
-      {/* Sophisticated gradient background */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(ellipse at top, ${colors.background.secondary} 0%, ${colors.background.primary} 50%),
-            radial-gradient(ellipse at bottom right, ${colors.background.accent} 0%, transparent 50%),
-            linear-gradient(135deg, ${colors.background.primary} 0%, ${colors.background.secondary} 100%)
-          `
-        }}
-        animate={{
-          background: [
-            `radial-gradient(ellipse at top, ${colors.background.secondary} 0%, ${colors.background.primary} 50%)`,
-            `radial-gradient(ellipse at top right, ${colors.background.secondary} 0%, ${colors.background.primary} 50%)`,
-            `radial-gradient(ellipse at top, ${colors.background.secondary} 0%, ${colors.background.primary} 50%)`
-          ]
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear"
-        }}
-      />
-
-      {/* Living galaxy canvas */}
+      {/* Canvas for living galaxy */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full galaxy-canvas"
         style={{
-          mixBlendMode: isDarkMode ? 'screen' : 'normal',
-          opacity: isActive ? 1 : 0.6,
-          transition: 'opacity 1s ease-in-out'
+          willChange: 'contents',
+          backfaceVisibility: 'hidden'
         }}
       />
 
-      {/* Subtle cosmic overlay for depth */}
+      {/* Optional: Add subtle CSS rotation for extra motion */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px,
-            ${colors.akshita.shadow} 0%, 
-            transparent 40%)`,
-          mixBlendMode: 'soft-light'
+          background: `radial-gradient(ellipse at center, transparent 0%, ${colors.background.primary}10 100%)`,
+          mixBlendMode: 'overlay'
         }}
         animate={{
-          opacity: isMouseMoving ? 0.6 : 0.2,
+          rotate: [0, 360],
         }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{
+          duration: 600, // 10 minutes for full rotation
+          repeat: Infinity,
+          ease: "linear"
+        }}
       />
     </div>
   );

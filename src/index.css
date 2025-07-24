@@ -957,4 +957,92 @@ body * {
       transform: translateY(-5px) scale(1.01);
     }
   }
+
+  /* === LIVING GALAXY ENHANCEMENTS === */
+  /* Slow galaxy rotation for extra motion */
+  .galaxy-container {
+    animation: galaxyRotate 600s linear infinite;
+  }
+
+  @keyframes galaxyRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Enhanced galaxy canvas with hardware acceleration */
+  .galaxy-canvas {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    will-change: contents;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+
+  /* Twinkling star effects */
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    25% { opacity: 0.8; transform: scale(1.1); }
+    50% { opacity: 1; transform: scale(1.2); }
+    75% { opacity: 0.9; transform: scale(1.05); }
+  }
+
+  /* Nebula breathing effect */
+  @keyframes nebulaBreathing {
+    0%, 100% { opacity: 0.1; transform: scale(1) rotate(0deg); }
+    33% { opacity: 0.2; transform: scale(1.05) rotate(1deg); }
+    66% { opacity: 0.15; transform: scale(0.95) rotate(-1deg); }
+  }
+
+  /* Smooth cosmic transitions */
+  .cosmic-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Living galaxy performance optimizations */
+  .living-galaxy {
+    contain: layout style paint;
+    isolation: isolate;
+    will-change: transform, opacity;
+    transform-style: preserve-3d;
+  }
+
+  /* Star layer depth simulation */
+  .star-layer-0 { filter: blur(0.5px); opacity: 0.4; }
+  .star-layer-1 { filter: blur(0.2px); opacity: 0.7; }
+  .star-layer-2 { filter: none; opacity: 1.0; }
+
+  /* Mouse interaction ripple effect */
+  @keyframes mouseRipple {
+    0% { 
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% { 
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* Ambient floating elements */
+  @keyframes floatingUp {
+    0% {
+      transform: translateY(100vh) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.7;
+    }
+    90% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: translateY(-100px) rotate(360deg);
+      opacity: 0;
+    }
+  }
 }

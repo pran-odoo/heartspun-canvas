@@ -1,6 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 
+// Error Boundary for SophisticatedText - exported for external use
+export class SophisticatedTextErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    // Update state so the next render will show the fallback UI
+    console.error('SophisticatedText Error:', error);
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('SophisticatedText Error Details:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="text-2xl text-gray-800 font-serif">
+          {/* Fallback text that matches the sophisticated theme */}
+          Loading...
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 interface SophisticatedTextProps {
   children: React.ReactNode;
   variant: 'hero' | 'akshita-elegant' | 'sophisticated-subtitle' | 'romantic-script' | 'luxury-body';
@@ -18,11 +52,11 @@ interface ElegantTitleProps {
 }
 
 const SOPHISTICATED_FONTS = {
-  hero: 'font-family: "Playfair Display", serif',
-  akshitaElegant: 'font-family: "Playfair Display", serif',
-  subtitle: 'font-family: "Inter", sans-serif',
-  script: 'font-family: "Dancing Script", cursive',
-  luxury: 'font-family: "Inter", sans-serif',
+  hero: '"Playfair Display", serif',
+  akshitaElegant: '"Playfair Display", serif',
+  subtitle: '"Inter", sans-serif',
+  script: '"Dancing Script", cursive',
+  luxury: '"Inter", sans-serif',
 };
 
 const SOPHISTICATED_COLORS = {
@@ -44,7 +78,8 @@ const SOPHISTICATED_COLORS = {
   }
 };
 
-export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
+// Internal component without error boundary
+const SophisticatedTextInternal: React.FC<SophisticatedTextProps> = ({
   children,
   variant,
   className = '',
@@ -72,7 +107,7 @@ export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
           fontWeight: '400',
           lineHeight: '1.1',
           letterSpacing: '-0.02em',
-          ...SOPHISTICATED_FONTS.hero,
+          fontFamily: SOPHISTICATED_FONTS.hero,
           background: 'linear-gradient(135deg, #2C1810 0%, #8B4513 50%, #2C1810 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -85,7 +120,7 @@ export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
           fontWeight: '700',
           lineHeight: '0.9',
           letterSpacing: '0.05em',
-          ...SOPHISTICATED_FONTS.akshitaElegant,
+          fontFamily: SOPHISTICATED_FONTS.akshitaElegant,
           background: 'linear-gradient(45deg, #B8860B 0%, #FFD700 25%, #F0E68C 50%, #FFD700 75%, #B8860B 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -99,7 +134,7 @@ export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
           fontWeight: '300',
           lineHeight: '1.4',
           letterSpacing: '0.02em',
-          ...SOPHISTICATED_FONTS.subtitle,
+          fontFamily: SOPHISTICATED_FONTS.subtitle,
           color: '#4A2C17',
           textShadow: '0 2px 6px rgba(74, 44, 23, 0.2)',
         };
@@ -109,7 +144,7 @@ export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
           fontWeight: '400',
           lineHeight: '1.3',
           letterSpacing: '0.01em',
-          ...SOPHISTICATED_FONTS.script,
+          fontFamily: SOPHISTICATED_FONTS.script,
           background: 'linear-gradient(135deg, #C08497 0%, #D2B48C 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -122,7 +157,7 @@ export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
           fontWeight: '400',
           lineHeight: '1.6',
           letterSpacing: '0.01em',
-          ...SOPHISTICATED_FONTS.luxury,
+          fontFamily: SOPHISTICATED_FONTS.luxury,
           color: '#2C1810',
           opacity: 0.9,
         };
@@ -182,6 +217,27 @@ export const SophisticatedText: React.FC<SophisticatedTextProps> = ({
       
       {children}
     </motion.div>
+  );
+};
+
+// Exported component with error boundary protection
+export const SophisticatedText: React.FC<SophisticatedTextProps> = (props) => {
+  return (
+    <SophisticatedTextErrorBoundary
+      fallback={
+        <div 
+          className={`text-2xl font-serif ${props.className || ''}`}
+          style={{ 
+            fontFamily: '"Playfair Display", serif',
+            color: '#2C1810'
+          }}
+        >
+          {props.children}
+        </div>
+      }
+    >
+      <SophisticatedTextInternal {...props} />
+    </SophisticatedTextErrorBoundary>
   );
 };
 

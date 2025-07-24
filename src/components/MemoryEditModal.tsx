@@ -10,6 +10,8 @@ interface Memory {
   photos: string[];
   location?: string;
   tags?: string[];
+  type?: 'photo' | 'song' | 'milestone' | 'trip' | 'surprise';
+  feeling?: 'happy' | 'romantic' | 'adventurous' | 'peaceful' | 'excited';
 }
 
 interface MemoryEditModalProps {

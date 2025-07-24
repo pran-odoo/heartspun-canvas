@@ -14,9 +14,7 @@ import { VoiceNavigation } from '@/components/VoiceNavigation';
 import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
 import { ReactBitsLightning } from '@/components/ReactBitsLightning';
-import { MemoryEditModal } from '@/components/MemoryEditModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Edit, Heart, MapPin, Calendar } from 'lucide-react';
 
 const Index = () => {
   const [currentTheme, setCurrentTheme] = useState<'morning' | 'evening' | 'night'>('morning');
@@ -28,37 +26,6 @@ const Index = () => {
   const [beatIntensity, setBeatIntensity] = useState(0);
   const [biometricData, setBiometricData] = useState({});
   const [isVoiceTriggeredChat, setIsVoiceTriggeredChat] = useState(false);
-  const [selectedMemory, setSelectedMemory] = useState<any>(null);
-  const [isMemoryModalOpen, setIsMemoryModalOpen] = useState(false);
-  const [memories, setMemories] = useState([
-    {
-      id: '1',
-      title: 'Our First Date',
-      description: 'The most magical evening with AKSHITA, where everything began...',
-      date: '2024-01-15',
-      location: 'Sunset Café',
-      photos: ['/api/placeholder/300/200', '/api/placeholder/300/200'],
-      tags: ['romantic', 'first-date', 'special']
-    },
-    {
-      id: '2', 
-      title: 'Dancing Under Stars',
-      description: 'AKSHITA looked absolutely stunning as we danced under the starlit sky...',
-      date: '2024-02-14',
-      location: 'Rose Garden',
-      photos: ['/api/placeholder/300/200'],
-      tags: ['dance', 'stars', 'valentine']
-    },
-    {
-      id: '3',
-      title: 'Beach Sunrise',
-      description: 'Watching the sunrise with AKSHITA, the most peaceful moment of my life...',
-      date: '2024-03-20',
-      location: 'Golden Beach',
-      photos: ['/api/placeholder/300/200', '/api/placeholder/300/200', '/api/placeholder/300/200'],
-      tags: ['sunrise', 'beach', 'peaceful']
-    }
-  ]);
 
   // Mouse tracking for particle system
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -190,23 +157,7 @@ const Index = () => {
     console.log('Updated user preferences:', preferences);
   };
 
-  // Memory editing handlers
-  const handleEditMemory = (memory: any) => {
-    setSelectedMemory(memory);
-    setIsMemoryModalOpen(true);
-  };
-
-  const handleSaveMemory = (updatedMemory: any) => {
-    setMemories(prev => prev.map(m => m.id === updatedMemory.id ? updatedMemory : m));
-    setIsMemoryModalOpen(false);
-    setSelectedMemory(null);
-  };
-
-  const handleDeleteMemory = (memoryId: string) => {
-    setMemories(prev => prev.filter(m => m.id !== memoryId));
-    setIsMemoryModalOpen(false);
-    setSelectedMemory(null);
-  };
+  // Memory editing is now handled by MemoryTimeline component
 
   // Create floating ambient elements
   useEffect(() => {
@@ -351,157 +302,7 @@ const Index = () => {
           />
         </div>
 
-        {/* Our Beautiful Memories Section with ReactBits Lightning Background */}
-        <div id="memories" className="min-h-screen relative" data-background="dark">
-          {/* ReactBits Lightning Background */}
-          <ReactBitsLightning 
-            intensity="medium"
-            isActive={true}
-            className="lightning-background"
-          />
-          
-          <div className="relative z-10 flex items-center justify-center min-h-screen p-8">
-            <div className="max-w-6xl mx-auto">
-              {/* Section Header */}
-              <motion.div
-                className="text-center mb-12"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <h2 className="text-5xl md:text-6xl font-romantic font-bold bg-gradient-to-r from-white via-blue-200 to-cyan-300 bg-clip-text text-transparent mb-4">
-                  Our Beautiful Memories
-                </h2>
-                <p className="text-xl text-white/80 max-w-2xl mx-auto">
-                  Every precious moment with AKSHITA, captured and preserved forever
-                </p>
-              </motion.div>
-
-              {/* Memory Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {memories.map((memory, index) => (
-                  <motion.div
-                    key={memory.id}
-                    className="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 memory-card"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.6 }}
-                    whileHover={{ scale: 1.05, y: -10 }}
-                    data-interactive
-                  >
-                    {/* Enhanced Edit Me Button */}
-                    <motion.button
-                      onClick={() => handleEditMemory(memory)}
-                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/40 hover:to-blue-500/40 backdrop-blur-sm rounded-full p-3 transition-all duration-500 border border-cyan-400/30 hover:border-cyan-400/60"
-                      whileHover={{ 
-                        scale: 1.15, 
-                        rotate: 10,
-                        boxShadow: "0 0 20px rgba(0, 212, 255, 0.4)"
-                      }}
-                      whileTap={{ scale: 0.9 }}
-                      initial={{ rotate: -10, scale: 0.8 }}
-                      animate={{ rotate: 0, scale: 1 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    >
-                      <Edit className="w-4 h-4 text-cyan-300" />
-                      
-                      {/* Edit Me Tooltip */}
-                      <motion.div
-                        className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-cyan-500/90 text-white text-xs px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none"
-                        initial={{ y: -10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        Edit Me
-                        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-b-2 border-transparent border-b-cyan-500/90"></div>
-                      </motion.div>
-                      
-                      {/* Electric glow effect */}
-                      <motion.div
-                        className="absolute inset-0 rounded-full bg-cyan-400/20"
-                        animate={{
-                          scale: [1, 1.3, 1],
-                          opacity: [0, 0.6, 0]
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                    </motion.button>
-
-                    {/* Memory Photos */}
-                    <div className="relative mb-4 overflow-hidden rounded-xl">
-                      <img
-                        src={memory.photos[0]}
-                        alt={memory.title}
-                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      {memory.photos.length > 1 && (
-                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
-                          +{memory.photos.length - 1}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Memory Content */}
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-semibold text-white">{memory.title}</h3>
-                      <p className="text-white/70 text-sm line-clamp-2">{memory.description}</p>
-                      
-                      <div className="flex items-center gap-4 text-white/60 text-xs">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(memory.date).toLocaleDateString()}
-                        </div>
-                        {memory.location && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {memory.location}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-1">
-                        {memory.tags?.slice(0, 3).map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className="px-2 py-1 bg-cyan-400/20 text-cyan-300 text-xs rounded-full border border-cyan-400/30"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Heart Icon */}
-                    <motion.div
-                      className="absolute bottom-4 right-4 text-pink-400"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ repeat: Infinity, duration: 2 }}
-                    >
-                      <Heart className="w-5 h-5 fill-current" />
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Add New Memory Button */}
-              <motion.div
-                className="text-center mt-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                <button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-                  Create New Memory
-                </button>
-              </motion.div>
-            </div>
-          </div>
-        </div>
+        {/* Our Beautiful Memories Section is now handled by MemoryTimeline component */}
 
         {/* Our Romantic Songs Section with ReactBits Lightning Background */}
         <div id="music" className="min-h-screen relative" data-background="dark">
@@ -615,17 +416,7 @@ const Index = () => {
         </div>
       </footer>
 
-      {/* Memory Edit Modal */}
-      <MemoryEditModal
-        memory={selectedMemory}
-        isOpen={isMemoryModalOpen}
-        onClose={() => {
-          setIsMemoryModalOpen(false);
-          setSelectedMemory(null);
-        }}
-        onSave={handleSaveMemory}
-        onDelete={handleDeleteMemory}
-      />
+      {/* Memory editing is now handled by MemoryTimeline component */}
     </div>
   );
 };

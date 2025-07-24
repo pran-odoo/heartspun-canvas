@@ -5,6 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, Calendar, MapPin, Music, Camera, Plus, Edit } from 'lucide-react';
 import { ReactBitsLightning } from '@/components/ReactBitsLightning';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MemoryEditModal } from '@/components/MemoryEditModal';
+import { RollingGallery } from '@/components/RollingGallery';
+import { akshitaPhotos } from '@/data/akshitaPhotos';
 
 interface Memory {
   id: string;
@@ -15,6 +18,7 @@ interface Memory {
   location?: string;
   photos?: string[];
   feeling: 'happy' | 'romantic' | 'adventurous' | 'peaceful' | 'excited';
+  tags?: string[];
 }
 
 interface MemoryTimelineProps {
@@ -22,7 +26,7 @@ interface MemoryTimelineProps {
 }
 
 export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
-  const [memories] = useState<Memory[]>([
+  const [memories, setMemories] = useState<Memory[]>([
     {
       id: '1',
       date: '2023-01-14',
@@ -30,7 +34,8 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
       description: 'The moment I knew you were special. Coffee turned into hours of conversation, and I never wanted it to end.',
       type: 'milestone',
       location: 'That cozy café downtown',
-      feeling: 'romantic'
+      feeling: 'romantic',
+      photos: []
     },
     {
       id: '2',
@@ -39,7 +44,8 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
       description: 'Cherry blossoms, homemade sandwiches, and your beautiful laugh echoing through the park.',
       type: 'photo',
       location: 'Central Park',
-      feeling: 'happy'
+      feeling: 'happy',
+      photos: []
     },
     {
       id: '3',
@@ -47,7 +53,8 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
       title: 'Our Song',
       description: 'The first time we danced together in your living room. Now I hear it everywhere and think of you.',
       type: 'song',
-      feeling: 'romantic'
+      feeling: 'romantic',
+      photos: []
     },
     {
       id: '4',
@@ -56,7 +63,8 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
       description: 'Getting lost in the mountains but finding ourselves. The sunrise was beautiful, but not as beautiful as you.',
       type: 'trip',
       location: 'Blue Ridge Mountains',
-      feeling: 'adventurous'
+      feeling: 'adventurous',
+      photos: []
     },
     {
       id: '5',
@@ -64,13 +72,16 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
       title: 'Christmas Magic',
       description: 'Your eyes sparkled brighter than all the lights. The best gift was spending it with you.',
       type: 'surprise',
-      feeling: 'excited'
+      feeling: 'excited',
+      photos: []
     }
   ]);
 
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const [isAddingMemory, setIsAddingMemory] = useState(false);
   const [hoveredMemoryId, setHoveredMemoryId] = useState<string | null>(null);
+  const [editingMemory, setEditingMemory] = useState<Memory | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getTypeIcon = (type: Memory['type']) => {
@@ -103,8 +114,26 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
   };
 
   const handleEditMemory = (memory: Memory) => {
-    console.log('Editing memory:', memory);
-    // TODO: Open edit modal
+    setEditingMemory(memory);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveMemory = (updatedMemory: Memory) => {
+    setMemories(prevMemories => 
+      prevMemories.map(memory => 
+        memory.id === updatedMemory.id ? updatedMemory : memory
+      )
+    );
+    setIsEditModalOpen(false);
+    setEditingMemory(null);
+  };
+
+  const handleDeleteMemory = (memoryId: string) => {
+    setMemories(prevMemories => 
+      prevMemories.filter(memory => memory.id !== memoryId)
+    );
+    setIsEditModalOpen(false);
+    setEditingMemory(null);
   };
 
   const handleMouseEnter = (memoryId: string) => {
@@ -116,7 +145,7 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
   };
 
   return (
-    <section className="min-h-screen relative memory-section" data-background="dark">
+    <section className="min-h-screen relative memory-section" data-background="dark" id="memories">
       {/* MANDATORY REACTBITS LIGHTNING BACKGROUND */}
       <ReactBitsLightning 
         intensity="high"
@@ -135,6 +164,25 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
             <p className="text-xl text-white/80 max-w-2xl mx-auto">
               Every memory with you is a treasure. Here's our story, one beautiful moment at a time.
             </p>
+          </div>
+
+          {/* Rolling Gallery with AKSHITA Photos */}
+          <div className="mb-20">
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-romantic font-bold text-white mb-4">
+                Precious Moments with AKSHITA
+              </h3>
+              <p className="text-lg text-white/70">
+                Swipe through our beautiful memories together
+              </p>
+            </div>
+            <RollingGallery 
+              autoplay={true} 
+              pauseOnHover={true}
+              images={akshitaPhotos}
+              autoplayInterval={5000}
+              className="max-w-4xl mx-auto"
+            />
           </div>
 
           {/* Timeline */}
@@ -329,6 +377,18 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
               </Card>
             </div>
           )}
+
+          {/* Memory Edit Modal */}
+          <MemoryEditModal
+            memory={editingMemory}
+            isOpen={isEditModalOpen}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setEditingMemory(null);
+            }}
+            onSave={handleSaveMemory}
+            onDelete={handleDeleteMemory}
+          />
         </div>
 
         {/* Hidden file input for adding photos */}

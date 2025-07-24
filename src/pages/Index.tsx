@@ -184,10 +184,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
-      {/* Background Effects */}
-      <div className="fixed inset-0 morphing-bg opacity-20 pointer-events-none will-change-transform" />
-      
-      {/* Enhanced 3D Particle System */}
+            {/* The HeroSection now includes its own AkshitaDynamicBackground */}
+      {/* Keep Enhanced3DEffects for other sections if needed */}
       <Enhanced3DEffects
         theme={currentTheme}
         mousePosition={mousePosition}
@@ -195,8 +193,8 @@ const Index = () => {
         beatIntensity={beatIntensity}
         biometricData={biometricData}
       />
-      
-      {/* Original Particle System (Fallback) */}
+
+      {/* Original Particle System (Fallback) for non-hero sections */}
       <ParticleSystem
         theme={currentTheme}
         mousePosition={mousePosition}

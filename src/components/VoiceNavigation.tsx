@@ -35,44 +35,64 @@ export const VoiceNavigation: React.FC<VoiceNavigationProps> = ({
 
   // Initialize speech recognition
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      const recognitionInstance = new SpeechRecognition();
-      
-      recognitionInstance.continuous = true;
-      recognitionInstance.interimResults = true;
-      recognitionInstance.lang = 'en-US';
-
-      recognitionInstance.onstart = () => {
-        setIsListening(true);
-      };
-
-      recognitionInstance.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionInstance.onresult = (event: any) => {
-        let finalTranscript = '';
+    try {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+        const recognitionInstance = new SpeechRecognition();
         
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
+        recognitionInstance.continuous = true;
+        recognitionInstance.interimResults = true;
+        recognitionInstance.lang = 'en-US';
+
+        recognitionInstance.onstart = () => {
+          setIsListening(true);
+        };
+
+        recognitionInstance.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionInstance.onresult = (event: any) => {
+          try {
+            let finalTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+              }
+            }
+
+            if (finalTranscript) {
+              const cleanTranscript = finalTranscript.toLowerCase().trim();
+              setTranscript(cleanTranscript);
+              processVoiceCommand(cleanTranscript);
+            }
+          } catch (error) {
+            console.warn('Voice processing error:', error);
           }
-        }
+        };
 
-        if (finalTranscript) {
-          setTranscript(finalTranscript.toLowerCase().trim());
-          processVoiceCommand(finalTranscript.toLowerCase().trim());
-        }
-      };
+        recognitionInstance.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+          
+          // Handle specific errors
+          if (event.error === 'not-allowed') {
+            console.warn('Microphone access denied');
+          } else if (event.error === 'no-speech') {
+            console.warn('No speech detected');
+          }
+        };
 
-      recognitionInstance.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-      };
-
-      setRecognition(recognitionInstance);
-      setIsSupported(true);
+        setRecognition(recognitionInstance);
+        setIsSupported(true);
+      } else {
+        console.warn('Speech Recognition not supported in this browser');
+        setIsSupported(false);
+      }
+    } catch (error) {
+      console.error('Failed to initialize voice recognition:', error);
+      setIsSupported(false);
     }
   }, []);
 

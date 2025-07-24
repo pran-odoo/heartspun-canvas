@@ -15,7 +15,6 @@ import Gallery from "./pages/Gallery";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import { NavigationProvider } from "./contexts/NavigationContext";
-import { GlobalNavigation } from "./components/GlobalNavigation";
 
 const queryClient = new QueryClient();
 
@@ -52,7 +51,6 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <NavigationProvider>
-            <GlobalNavigation />
             <AnimatedRoutes />
           </NavigationProvider>
         </BrowserRouter>

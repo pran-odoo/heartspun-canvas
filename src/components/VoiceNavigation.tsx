@@ -2,49 +2,44 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, CheckCircle, XCircle, Volume2, VolumeX, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigation } from '@/contexts/NavigationContext';
-
 interface VoiceNavigationProps {
+  onNavigate: (section: string) => void;
   onCommand?: (command: string) => void;
   onChatOpen?: () => void;
 }
 
 const voiceCommands = {
-  'go home': '/',
-  'show memories': '/memories', 
-  'play music': '/music',
+  'go home': 'hero',
+  'show memories': 'memories', 
+  'play music': 'music',
   'open chat': 'chat',
   'show chat': 'chat',
   'start chat': 'chat',
   'talk to ai': 'chat',
-  'view gallery': '/gallery',
-  'surprise me': '/surprises',
-  'settings': '/settings',
-  'show timeline': '/timeline',
-  'personalization': '/personalization',
+  'view gallery': 'memories',
+  'surprise me': 'surprises',
+  'show timeline': 'timeline',
+  'personalization': 'personalization',
   'theme morning': 'theme-morning',
   'theme evening': 'theme-evening', 
   'theme night': 'theme-night',
   'help': 'help',
   'voice help': 'help',
   'what can you do': 'help',
-  'go back': 'back',
-  'previous page': 'back',
 };
 
 const commandDescriptions = {
   'Navigation': ['go home', 'show memories', 'play music', 'view gallery', 'surprise me', 'show timeline'],
   'Chat': ['open chat', 'show chat', 'talk to ai'],
-  'Controls': ['go back', 'previous page', 'settings'],
   'Themes': ['theme morning', 'theme evening', 'theme night'],
   'Help': ['help', 'voice help', 'what can you do'],
 };
 
 export const VoiceNavigation: React.FC<VoiceNavigationProps> = ({
+  onNavigate,
   onCommand,
   onChatOpen,
 }) => {
-  const { navigate, goBack } = useNavigation();
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
@@ -160,17 +155,14 @@ export const VoiceNavigation: React.FC<VoiceNavigationProps> = ({
       if (action === 'chat') {
         onChatOpen?.();
         commandExecuted = true;
-      } else if (action === 'back') {
-        goBack();
-        commandExecuted = true;
       } else if (action.startsWith('theme-')) {
         onCommand?.(action);
         commandExecuted = true;
       } else if (action === 'help') {
         setShowHelp(true);
         commandExecuted = true;
-      } else if (action.startsWith('/')) {
-        navigate(action);
+      } else {
+        onNavigate(action);
         commandExecuted = true;
       }
     } else {
@@ -180,17 +172,14 @@ export const VoiceNavigation: React.FC<VoiceNavigationProps> = ({
           if (action === 'chat') {
             onChatOpen?.();
             commandExecuted = true;
-          } else if (action === 'back') {
-            goBack();
-            commandExecuted = true;
           } else if (action.startsWith('theme-')) {
             onCommand?.(action);
             commandExecuted = true;
           } else if (action === 'help') {
             setShowHelp(true);
             commandExecuted = true;
-          } else if (action.startsWith('/')) {
-            navigate(action);
+          } else {
+            onNavigate(action);
             commandExecuted = true;
           }
           break;
@@ -232,7 +221,7 @@ export const VoiceNavigation: React.FC<VoiceNavigationProps> = ({
         setLastCommand('');
       }
          }, 3000);
-   }, [navigate, goBack, onCommand, onChatOpen, audioEnabled, showHelp]);
+   }, [onNavigate, onCommand, onChatOpen, audioEnabled, showHelp]);
 
   const playSuccessSound = useCallback(() => {
     try {

@@ -60,6 +60,14 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Optimized Transition Variables */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-bounce: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-elastic: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   /* Evening Theme - Deep and Romantic */
@@ -140,26 +148,48 @@
 @layer base {
   * {
     @apply border-border;
+    /* Hardware acceleration for smooth animations */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     overflow-x: hidden;
+    /* Smooth theme transitions */
+    transition: background-color var(--transition-slow), color var(--transition-slow);
   }
 
   .font-romantic {
     font-family: 'Playfair Display', serif;
   }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Theme transition container */
+  .theme-transition {
+    transition: all var(--transition-slow);
+  }
 }
 
 @layer components {
-  /* Glassmorphism Components */
+  /* Enhanced Glassmorphism Components */
   .glass {
     background: linear-gradient(135deg, hsl(var(--glass) / 0.1), hsl(var(--glass) / 0.05));
     backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid hsl(var(--glass-border) / 0.2);
     box-shadow: 0 8px 32px hsl(var(--primary) / 0.1), 0 0 0 1px hsl(var(--glass-border) / 0.1);
+    transition: all var(--transition-normal), backdrop-filter var(--transition-slow);
+  }
+
+  .glass:hover {
+    backdrop-filter: blur(24px) saturate(200%);
+    box-shadow: 0 12px 40px hsl(var(--primary) / 0.15), 0 0 0 1px hsl(var(--glass-border) / 0.3);
   }
 
   .glass-romantic {
@@ -167,6 +197,13 @@
     backdrop-filter: blur(24px) saturate(200%);
     border: 1px solid hsl(var(--romantic) / 0.2);
     box-shadow: 0 20px 40px hsl(var(--romantic) / 0.2), 0 0 60px hsl(var(--romantic) / 0.1);
+    transition: all var(--transition-normal), backdrop-filter var(--transition-slow);
+  }
+
+  .glass-romantic:hover {
+    backdrop-filter: blur(28px) saturate(220%);
+    box-shadow: 0 24px 48px hsl(var(--romantic) / 0.25), 0 0 80px hsl(var(--romantic) / 0.15);
+    border-color: hsl(var(--romantic) / 0.3);
   }
 
   .glass-gold {
@@ -174,20 +211,32 @@
     backdrop-filter: blur(16px) saturate(160%);
     border: 1px solid hsl(var(--gold) / 0.3);
     box-shadow: 0 10px 30px hsl(var(--gold) / 0.3), 0 0 80px hsl(var(--gold) / 0.1);
+    transition: all var(--transition-normal), backdrop-filter var(--transition-slow);
   }
 
-  /* Floating Elements */
+  .glass-gold:hover {
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 16px 40px hsl(var(--gold) / 0.4), 0 0 100px hsl(var(--gold) / 0.15);
+    border-color: hsl(var(--gold) / 0.4);
+  }
+
+  /* Enhanced Floating Elements */
   .floating {
     animation: float 6s ease-in-out infinite;
+    will-change: transform;
   }
 
   .floating-delayed {
     animation: float 8s ease-in-out infinite 2s;
+    will-change: transform;
   }
 
-  /* Interactive Elements */
+  /* Enhanced Interactive Elements */
   .hover-lift {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--transition-normal), 
+                box-shadow var(--transition-normal),
+                scale var(--transition-fast);
+    will-change: transform, box-shadow;
   }
 
   .hover-lift:hover {
@@ -195,6 +244,27 @@
     box-shadow: 0 20px 40px hsl(var(--primary) / 0.15);
   }
 
+  .hover-lift:active {
+    transform: translateY(-4px) scale(0.98);
+    transition: transform var(--transition-fast);
+  }
+
+  /* Smooth Button Transitions */
+  .btn-smooth {
+    transition: all var(--transition-normal);
+    transform: scale(1);
+  }
+
+  .btn-smooth:hover {
+    transform: scale(1.05);
+  }
+
+  .btn-smooth:active {
+    transform: scale(0.95);
+    transition: transform var(--transition-fast);
+  }
+
+  /* Enhanced Cursor Effects */
   .cursor-trail {
     position: fixed;
     width: 4px;
@@ -204,17 +274,19 @@
     pointer-events: none;
     z-index: 9999;
     animation: sparkle 1.5s ease-out forwards;
+    will-change: transform, opacity;
   }
 
-  /* Morphing Backgrounds */
+  /* Optimized Morphing Backgrounds */
   .morphing-bg {
     background: radial-gradient(circle at 20% 80%, hsl(var(--primary) / 0.3) 0%, transparent 50%), 
                 radial-gradient(circle at 80% 20%, hsl(var(--romantic) / 0.2) 0%, transparent 50%), 
                 radial-gradient(circle at 40% 40%, hsl(var(--gold) / 0.1) 0%, transparent 50%);
     animation: morphBackground 20s ease-in-out infinite;
+    will-change: background-position, filter;
   }
 
-  /* Particle Container */
+  /* Enhanced Particle Container */
   .particle-container {
     position: absolute;
     top: 0;
@@ -223,6 +295,7 @@
     height: 100%;
     overflow: hidden;
     pointer-events: none;
+    will-change: transform;
   }
 
   .particle {
@@ -230,6 +303,7 @@
     border-radius: 50%;
     pointer-events: none;
     opacity: 0;
+    will-change: transform, opacity;
   }
 
   .heart-particle {
@@ -244,28 +318,70 @@
     height: 2px;
     animation: starTwinkle 3s ease-in-out infinite;
   }
+
+  /* Page Transition Effects */
+  .page-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  .page-exit {
+    opacity: 1;
+  }
+
+  .page-exit-active {
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  /* Section Transitions */
+  .section-transition {
+    transition: all var(--transition-smooth);
+  }
+
+  .section-enter {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  .section-enter-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @layer utilities {
-  /* Advanced Keyframes */
+  /* Optimized Keyframes with GPU acceleration */
   @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    33% { transform: translateY(-20px) rotate(1deg); }
-    66% { transform: translateY(-10px) rotate(-1deg); }
+    0%, 100% { 
+      transform: translateY(0) rotate(0deg) translateZ(0); 
+    }
+    33% { 
+      transform: translateY(-20px) rotate(1deg) translateZ(0); 
+    }
+    66% { 
+      transform: translateY(-10px) rotate(-1deg) translateZ(0); 
+    }
   }
 
   @keyframes sparkle {
     0% { 
       opacity: 1; 
-      transform: scale(0) rotate(0deg); 
+      transform: scale(0) rotate(0deg) translateZ(0); 
     }
     50% { 
       opacity: 1; 
-      transform: scale(1) rotate(180deg); 
+      transform: scale(1) rotate(180deg) translateZ(0); 
     }
     100% { 
       opacity: 0; 
-      transform: scale(0) rotate(360deg); 
+      transform: scale(0) rotate(360deg) translateZ(0); 
     }
   }
 
@@ -291,32 +407,32 @@
   @keyframes heartFloat {
     0% {
       opacity: 0;
-      transform: translateY(0) scale(0) rotate(0deg);
+      transform: translateY(0) scale(0) rotate(0deg) translateZ(0);
     }
     20% {
       opacity: 1;
-      transform: translateY(-20px) scale(1) rotate(10deg);
+      transform: translateY(-20px) scale(1) rotate(10deg) translateZ(0);
     }
     100% {
       opacity: 0;
-      transform: translateY(-200px) scale(0.5) rotate(30deg);
+      transform: translateY(-200px) scale(0.5) rotate(30deg) translateZ(0);
     }
   }
 
   @keyframes starTwinkle {
     0%, 100% { 
       opacity: 0.3; 
-      transform: scale(1) rotate(0deg); 
+      transform: scale(1) rotate(0deg) translateZ(0); 
     }
     50% { 
       opacity: 1; 
-      transform: scale(1.5) rotate(180deg); 
+      transform: scale(1.5) rotate(180deg) translateZ(0); 
     }
   }
 
   @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% { transform: translateX(-100%) translateZ(0); }
+    100% { transform: translateX(100%) translateZ(0); }
   }
 
   @keyframes pulse-romantic {
@@ -334,24 +450,27 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Time-based animations */
+  /* Enhanced Time-based animations */
   .morning-rays {
     animation: gradient-shift 15s ease-in-out infinite;
     background: linear-gradient(-45deg, hsl(var(--gold)), hsl(var(--gold-soft)), hsl(var(--romantic-soft)), hsl(var(--primary-glow)));
     background-size: 400% 400%;
+    transition: background var(--transition-slow);
   }
 
   .evening-glow {
     animation: pulse-romantic 4s ease-in-out infinite;
+    transition: box-shadow var(--transition-slow);
   }
 
   .night-aurora {
     animation: gradient-shift 20s ease-in-out infinite, shimmer 8s ease-in-out infinite;
     background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--romantic)), hsl(var(--accent)), hsl(var(--primary)));
     background-size: 300% 100%;
+    transition: background var(--transition-slow);
   }
 
-  /* Additional animation utilities */
+  /* Enhanced animation utilities */
   .animate-pulse-romantic {
     animation: pulse-romantic 4s ease-in-out infinite;
   }
@@ -362,5 +481,36 @@
 
   .animate-float-delayed {
     animation: float 8s ease-in-out infinite 2s;
+  }
+
+  /* Smooth transition utilities */
+  .transition-smooth {
+    transition: all var(--transition-smooth);
+  }
+
+  .transition-fast {
+    transition: all var(--transition-fast);
+  }
+
+  .transition-bounce {
+    transition: all var(--transition-bounce);
+  }
+
+  .transition-elastic {
+    transition: all var(--transition-elastic);
+  }
+
+  /* Performance optimization classes */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 }

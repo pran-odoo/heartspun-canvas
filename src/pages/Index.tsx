@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ParticleSystem } from '@/components/ParticleSystem';
 import { ThemeController } from '@/components/ThemeController';
 import { HeroSection } from '@/components/HeroSection';
@@ -17,6 +18,7 @@ import { ReactBitsLightning } from '@/components/ReactBitsLightning';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [currentTheme, setCurrentTheme] = useState<'morning' | 'evening' | 'night'>('morning');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [activeSection, setActiveSection] = useState('hero');
@@ -114,30 +116,37 @@ const Index = () => {
     }, 550);
   };
 
-  // Enhanced navigation handler with smooth scrolling
+  // Enhanced navigation handler with React Router
   const handleNavigation = (section: string) => {
-    setActiveSection(section);
+    console.log('Navigating to:', section);
     
-    // Smooth scroll to section with enhanced options
-    const element = document.getElementById(section);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
-      });
-      
-      // Add visual feedback for section transition
-      element.classList.add('section-enter');
-      setTimeout(() => {
-        element.classList.add('section-enter-active');
-        element.classList.remove('section-enter');
-      }, 50);
-      
-      // Clean up classes after transition
-      setTimeout(() => {
-        element.classList.remove('section-enter-active');
-      }, 500);
+    // Map sections to routes
+    const routeMap: { [key: string]: string } = {
+      'memories': '/memories',
+      'music': '/music', 
+      'songs': '/music',
+      'surprises': '/surprises',
+      'timeline': '/timeline',
+      'personalization': '/personalization',
+      'gallery': '/gallery',
+      'settings': '/settings'
+    };
+    
+    const route = routeMap[section];
+    if (route) {
+      console.log('Navigating to route:', route);
+      navigate(route);
+    } else {
+      // Fallback to scroll within page for sections that don't have dedicated routes
+      setActiveSection(section);
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
     }
   };
 

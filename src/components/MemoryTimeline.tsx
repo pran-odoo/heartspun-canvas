@@ -29,7 +29,7 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
   const [memories, setMemories] = useState<Memory[]>([
     {
       id: '1',
-      date: '2023-01-14',
+      date: '2024-01-14',
       title: 'Our First Date',
       description: 'The moment I knew you were special. Coffee turned into hours of conversation, and I never wanted it to end.',
       type: 'milestone',
@@ -39,7 +39,7 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
     },
     {
       id: '2',
-      date: '2023-03-20',
+      date: '2024-03-20',
       title: 'Spring Picnic',
       description: 'Cherry blossoms, homemade sandwiches, and your beautiful laugh echoing through the park.',
       type: 'photo',
@@ -49,7 +49,7 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
     },
     {
       id: '3',
-      date: '2023-06-15',
+      date: '2024-06-15',
       title: 'Our Song',
       description: 'The first time we danced together in your living room. Now I hear it everywhere and think of you.',
       type: 'song',
@@ -58,7 +58,7 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
     },
     {
       id: '4',
-      date: '2023-09-10',
+      date: '2024-09-10',
       title: 'Weekend Adventure',
       description: 'Getting lost in the mountains but finding ourselves. The sunrise was beautiful, but not as beautiful as you.',
       type: 'trip',
@@ -68,11 +68,21 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({ theme }) => {
     },
     {
       id: '5',
-      date: '2023-12-24',
+      date: '2024-12-24',
       title: 'Christmas Magic',
       description: 'Your eyes sparkled brighter than all the lights. The best gift was spending it with you.',
       type: 'surprise',
       feeling: 'excited',
+      photos: []
+    },
+    {
+      id: '6',
+      date: '2025-01-14',
+      title: 'One Year Anniversary',
+      description: 'Celebrating our beautiful journey together. A whole year of amazing memories with you, AKSHITA.',
+      type: 'milestone',
+      location: 'Our special place',
+      feeling: 'romantic',
       photos: []
     }
   ]);

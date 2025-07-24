@@ -58,6 +58,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   const [showSpecialEffect, setShowSpecialEffect] = useState(false);
   const [interactionCount, setInteractionCount] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [recognition, setRecognition] = useState<any>(null);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isSpotifyOpen, setIsSpotifyOpen] = useState(false);
   const [effectsEnabled, setEffectsEnabled] = useState(true);
@@ -107,22 +110,76 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
     }
   }, [onNavigate]);
 
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = true;
+      recognitionInstance.interimResults = true;
+      recognitionInstance.lang = 'en-US';
+
+      recognitionInstance.onstart = () => {
+        setIsListening(true);
+        console.log('Voice recognition started');
+      };
+
+      recognitionInstance.onresult = (event: any) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+        setVoiceTranscript(transcript);
+        handleVoiceCommand(transcript);
+      };
+
+      recognitionInstance.onerror = (event: any) => {
+        console.error('Voice recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+        console.log('Voice recognition ended');
+      };
+
+      setRecognition(recognitionInstance);
+    }
+  }, []);
+
+  // Handle voice commands
+  const handleVoiceCommand = useCallback((command: string) => {
+    console.log('Voice command received:', command);
+    
+    if (command.includes('memories') || command.includes('photos')) {
+      onNavigate('memories');
+    } else if (command.includes('music') || command.includes('songs')) {
+      onNavigate('music');
+    } else if (command.includes('surprise') || command.includes('gift')) {
+      onNavigate('surprises');
+    } else if (command.includes('timeline') || command.includes('story')) {
+      onNavigate('timeline');
+    } else if (command.includes('settings') || command.includes('preferences')) {
+      onNavigate('settings');
+    }
+  }, [onNavigate]);
+
   // Voice Commands functionality
   const handleVoiceCommands = useCallback(() => {
     try {
-      // Activate voice recognition
-      const voiceSection = document.getElementById('voice-section');
-      if (voiceSection) {
-        voiceSection.scrollIntoView({ behavior: 'smooth' });
+      if (recognition) {
+        if (isListening) {
+          recognition.stop();
+          setIsListening(false);
+        } else {
+          recognition.start();
+          setIsListening(true);
+        }
       } else {
-        // Try to start voice recognition
-        const event = new CustomEvent('startVoiceRecognition');
-        window.dispatchEvent(event);
+        alert('Speech recognition not supported in this browser. Please use Chrome or Edge.');
       }
     } catch (error) {
       console.error('Voice activation failed:', error);
     }
-  }, []);
+  }, [recognition, isListening]);
 
   // AI Companion functionality
   const handleAICompanion = useCallback(() => {
@@ -410,8 +467,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
         >
           <motion.div
-            className={`feature-card voice-commands sophisticated-card p-8 rounded-3xl backdrop-blur-sm bg-white/5 border border-white/10 cursor-pointer transition-all duration-300 ${
-              buttonClicked === 'voice-commands' ? 'scale-95 bg-purple-500/20' : ''
+            className={`feature-card voice-commands sophisticated-card p-8 rounded-3xl backdrop-blur-sm border border-white/10 cursor-pointer transition-all duration-300 ${
+              isListening 
+                ? 'bg-purple-500/30 border-purple-400/60 shadow-lg shadow-purple-400/40' 
+                : buttonClicked === 'voice-commands' 
+                  ? 'scale-95 bg-purple-500/20' 
+                  : 'bg-white/5'
             }`}
             whileHover={{ scale: 1.05, y: -8, boxShadow: "0 10px 25px rgba(139, 92, 246, 0.3)" }}
             whileTap={{ scale: 0.98 }}
@@ -419,15 +480,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
             onClick={() => handleButtonClick('voice-commands', handleVoiceCommands)}
             data-interactive
           >
-            <div className="text-5xl mb-6">🗣️</div>
+            <div className={`text-5xl mb-6 ${isListening ? 'animate-pulse' : ''}`}>
+              {isListening ? '🎤' : '🗣️'}
+            </div>
             <SophisticatedText variant="sophisticated-subtitle" className="mb-3">
               Voice Commands
             </SophisticatedText>
             <LuxuryParagraph size="sm" weight="light">
-              Elegant voice interaction designed for AKSHITA's convenience
+              {isListening 
+                ? `Listening... Say "memories", "music", or "surprises"`
+                : "Elegant voice interaction designed for AKSHITA's convenience"
+              }
             </LuxuryParagraph>
+            {voiceTranscript && (
+              <div className="mt-2 text-sm text-purple-200 bg-purple-500/20 px-3 py-1 rounded-full">
+                "{voiceTranscript}"
+              </div>
+            )}
             <div className="mt-4 text-sm text-purple-300 opacity-0 group-hover:opacity-100 transition-opacity">
-              Click to activate voice recognition
+              {isListening ? 'Click to stop listening' : 'Click to activate voice recognition'}
             </div>
           </motion.div>
 

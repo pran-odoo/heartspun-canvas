@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EnhancedGalaxyBackground } from './EnhancedGalaxyBackground';
+import { ReactBitsGalaxy } from './ReactBitsGalaxy';
 import { SophisticatedText, ElegantTitle, LuxuryParagraph, SophisticatedQuote } from './SophisticatedTypography';
 import { AkshitaMagicalButton, AkshitaFloatingButton } from './AkshitaMagicalButtons';
 import { TargetCursor } from './TargetCursor';
@@ -131,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Sophisticated Galaxy Background System */}
-      <EnhancedGalaxyBackground
+      <ReactBitsGalaxy
         theme={theme}
         isDarkMode={isDarkMode}
         mousePosition={mousePosition}

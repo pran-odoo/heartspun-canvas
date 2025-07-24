@@ -3,6 +3,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* COMPREHENSIVE BLUR ELIMINATION SYSTEM */
+/* Target only problematic elements that can accumulate blur */
+body, html, #root {
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Reset any global blur effects that might stick */
+body * {
+  backdrop-filter: none !important;
+}
+
+/* Preserve intentional filters for specific components */
+.preserve-filter,
+[data-preserve-filter="true"],
+.drop-shadow,
+[style*="drop-shadow"] {
+  filter: revert !important;
+  backdrop-filter: revert !important;
+}
+
+/* Galaxy background specific isolation to prevent filter conflicts */
+.galaxy-background {
+  isolation: isolate;
+  contain: layout style paint;
+}
+
+/* Target cursor system styles */
+.target-cursor-container {
+  cursor: none;
+  position: relative;
+}
+
+/* Enhanced performance for animations */
+.galaxy-canvas {
+  will-change: auto;
+  contain: layout style;
+}
+
 /* Ultra-Advanced Romantic Design System */
 
 @layer base {

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SophisticatedGalaxyBackground } from './SophisticatedGalaxyBackground';
+import { EnhancedGalaxyBackground } from './EnhancedGalaxyBackground';
 import { SophisticatedText, ElegantTitle, LuxuryParagraph, SophisticatedQuote } from './SophisticatedTypography';
 import { AkshitaMagicalButton, AkshitaFloatingButton } from './AkshitaMagicalButtons';
+import { TargetCursor } from './TargetCursor';
+import { SpotifyIntegration } from './SpotifyIntegration';
 
 interface HeroSectionProps {
   theme: 'morning' | 'evening' | 'night';
@@ -57,6 +59,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   const [interactionCount, setInteractionCount] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isSpotifyOpen, setIsSpotifyOpen] = useState(false);
 
   // Track mouse for interactive effects
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -128,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Sophisticated Galaxy Background System */}
-      <SophisticatedGalaxyBackground
+      <EnhancedGalaxyBackground
         theme={theme}
         isDarkMode={isDarkMode}
         mousePosition={mousePosition}
@@ -199,44 +202,59 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           variants={itemVariants}
           className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
         >
-          <AkshitaMagicalButton
-            variant="memories"
-            size="lg"
-            onClick={() => {
-              handleInteraction();
-              onNavigate('memories');
-            }}
-            className="w-full sm:w-auto"
+          <TargetCursor
+            cursorText="Explore Memories"
+            variant="magnetic"
           >
-            <span className="text-2xl">📸</span>
-            <span>Our Beautiful Memories</span>
-          </AkshitaMagicalButton>
+            <AkshitaMagicalButton
+              variant="memories"
+              size="lg"
+              onClick={() => {
+                handleInteraction();
+                onNavigate('memories');
+              }}
+              className="w-full sm:w-auto"
+            >
+              <span className="text-2xl">📸</span>
+              <span>Our Beautiful Memories</span>
+            </AkshitaMagicalButton>
+          </TargetCursor>
 
-          <AkshitaMagicalButton
-            variant="songs"
-            size="lg"
-            onClick={() => {
-              handleInteraction();
-              onNavigate('music');
-            }}
-            className="w-full sm:w-auto"
+          <TargetCursor
+            cursorText="Play Music"
+            variant="romantic"
           >
-            <span className="text-2xl">🎵</span>
-            <span>Our Romantic Songs</span>
-          </AkshitaMagicalButton>
+            <AkshitaMagicalButton
+              variant="songs"
+              size="lg"
+              onClick={() => {
+                handleInteraction();
+                setIsSpotifyOpen(true);
+              }}
+              className="w-full sm:w-auto"
+            >
+              <span className="text-2xl">🎵</span>
+              <span>Our Romantic Songs</span>
+            </AkshitaMagicalButton>
+          </TargetCursor>
 
-          <AkshitaMagicalButton
-            variant="surprises"
-            size="lg"
-            onClick={() => {
-              handleInteraction();
-              onNavigate('surprises');
-            }}
-            className="w-full sm:w-auto"
+          <TargetCursor
+            cursorText="Discover Surprises"
+            variant="akshita-special"
           >
-            <span className="text-2xl">🎁</span>
-            <span>Magical Surprises</span>
-          </AkshitaMagicalButton>
+            <AkshitaMagicalButton
+              variant="surprises"
+              size="lg"
+              onClick={() => {
+                handleInteraction();
+                onNavigate('surprises');
+              }}
+              className="w-full sm:w-auto"
+            >
+              <span className="text-2xl">🎁</span>
+              <span>Magical Surprises</span>
+            </AkshitaMagicalButton>
+          </TargetCursor>
         </motion.div>
 
         {/* Special AKSHITA Button */}
@@ -244,19 +262,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           variants={itemVariants}
           className="mb-12"
         >
-          <AkshitaMagicalButton
+          <TargetCursor
+            cursorText="AKSHITA ✨"
             variant="akshita-special"
-            size="xl"
-            onClick={() => {
-              handleInteraction();
-              onNavigate('personalization');
-            }}
-            className="relative"
           >
-            <span className="text-3xl">👑</span>
-            <span>Made with Love for AKSHITA</span>
-            <span className="text-3xl">👑</span>
-          </AkshitaMagicalButton>
+            <AkshitaMagicalButton
+              variant="akshita-special"
+              size="xl"
+              onClick={() => {
+                handleInteraction();
+                onNavigate('personalization');
+              }}
+              className="relative"
+            >
+              <span className="text-3xl">👑</span>
+              <span>Made with Love for AKSHITA</span>
+              <span className="text-3xl">👑</span>
+            </AkshitaMagicalButton>
+          </TargetCursor>
         </motion.div>
 
         {/* Sophisticated Features Display */}
@@ -517,6 +540,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
           </SophisticatedText>
         </div>
       </motion.div>
+
+      {/* Spotify Integration Modal */}
+      <SpotifyIntegration
+        isOpen={isSpotifyOpen}
+        onClose={() => setIsSpotifyOpen(false)}
+        theme={theme}
+      />
     </section>
   );
 };

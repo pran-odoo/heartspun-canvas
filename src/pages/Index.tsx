@@ -11,6 +11,7 @@ import { MusicSystem } from '@/components/MusicSystem';
 import { BiometricAwareness } from '@/components/BiometricAwareness';
 import { Enhanced3DEffects } from '@/components/Enhanced3DEffects';
 import { VoiceNavigation } from '@/components/VoiceNavigation';
+import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
 
 const Index = () => {
@@ -235,11 +236,16 @@ const Index = () => {
       />
 
       {/* Voice Navigation */}
-      <VoiceNavigation
-        onNavigate={handleNavigation}
-        onCommand={handleVoiceCommand}
-        onChatOpen={handleVoiceChatOpen}
-      />
+      <TargetCursor
+        cursorText="Voice Commands"
+        variant="voice-command"
+      >
+        <VoiceNavigation
+          onNavigate={handleNavigation}
+          onCommand={handleVoiceCommand}
+          onChatOpen={handleVoiceChatOpen}
+        />
+      </TargetCursor>
 
       {/* Surprise Generator */}
       <SurpriseGenerator

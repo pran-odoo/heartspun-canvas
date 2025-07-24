@@ -5,6 +5,13 @@ import { HeroSection } from '@/components/HeroSection';
 import { MemoryTimeline } from '@/components/MemoryTimeline';
 import { CursorEffects } from '@/components/CursorEffects';
 import { PersonalizationEngine } from '@/components/PersonalizationEngine';
+import { FloatingNavigation } from '@/components/FloatingNavigation';
+import { AICompanion } from '@/components/AICompanion';
+import { MusicSystem } from '@/components/MusicSystem';
+import { BiometricAwareness } from '@/components/BiometricAwareness';
+import { Enhanced3DEffects } from '@/components/Enhanced3DEffects';
+import { VoiceNavigation } from '@/components/VoiceNavigation';
+import { SurpriseGenerator } from '@/components/SurpriseGenerator';
 
 const Index = () => {
   const [currentTheme, setCurrentTheme] = useState<'morning' | 'evening' | 'night'>('morning');
@@ -12,6 +19,9 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const [effectsEnabled, setEffectsEnabled] = useState(true);
   const [userPreferences, setUserPreferences] = useState({});
+  const [currentMood, setCurrentMood] = useState('romantic');
+  const [beatIntensity, setBeatIntensity] = useState(0);
+  const [biometricData, setBiometricData] = useState({});
 
   // Mouse tracking for particle system
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -51,6 +61,16 @@ const Index = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Music mood change handler
+  const handleMoodChange = useCallback((mood: string) => {
+    setCurrentMood(mood);
+  }, []);
+
+  // Biometric data handler
+  const handleBiometricUpdate = useCallback((data: any) => {
+    setBiometricData(data);
+  }, []);
 
   // Theme change handler
   const handleThemeChange = (theme: 'morning' | 'evening' | 'night') => {
@@ -96,17 +116,64 @@ const Index = () => {
       {/* Background Effects */}
       <div className="fixed inset-0 morphing-bg opacity-20 pointer-events-none" />
       
-      {/* Particle System */}
-      <ParticleSystem
+      {/* Enhanced 3D Particle System */}
+      <Enhanced3DEffects
         theme={currentTheme}
         mousePosition={mousePosition}
         isActive={effectsEnabled}
+        beatIntensity={beatIntensity}
+        biometricData={biometricData}
+      />
+      
+      {/* Original Particle System (Fallback) */}
+      <ParticleSystem
+        theme={currentTheme}
+        mousePosition={mousePosition}
+        isActive={effectsEnabled && !window.WebGLRenderingContext}
       />
       
       {/* Cursor Effects */}
       <CursorEffects
         theme={currentTheme}
         isActive={effectsEnabled}
+      />
+      
+      {/* Revolutionary Floating Navigation */}
+      <FloatingNavigation
+        onNavigate={handleNavigation}
+        currentSection={activeSection}
+        mousePosition={mousePosition}
+      />
+      
+      {/* AI Companion Chatbot */}
+      <AICompanion
+        theme={currentTheme}
+        userName="Beautiful"
+      />
+      
+      {/* Advanced Music System */}
+      <MusicSystem
+        theme={currentTheme}
+        onMoodChange={handleMoodChange}
+      />
+      
+      {/* Biometric Awareness */}
+      <BiometricAwareness
+        theme={currentTheme}
+        onDataUpdate={handleBiometricUpdate}
+      />
+
+      {/* Voice Navigation */}
+      <VoiceNavigation
+        onNavigate={handleNavigation}
+        onCommand={(cmd) => console.log('Voice command:', cmd)}
+      />
+
+      {/* Surprise Generator */}
+      <SurpriseGenerator
+        theme={currentTheme}
+        biometricData={biometricData}
+        userMood={currentMood}
       />
       
       {/* Theme Controller */}
@@ -116,7 +183,7 @@ const Index = () => {
       />
       
       {/* Effects Toggle */}
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 right-20 z-50">
         <button
           onClick={() => setEffectsEnabled(!effectsEnabled)}
           className={`glass-romantic rounded-full p-3 hover-lift transition-all ${
@@ -126,22 +193,6 @@ const Index = () => {
         >
           ✨
         </button>
-      </div>
-
-      {/* Navigation Dots */}
-      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-50 space-y-4">
-        {['hero', 'memories', 'timeline', 'personalization'].map((section) => (
-          <button
-            key={section}
-            onClick={() => handleNavigation(section)}
-            className={`w-3 h-3 rounded-full transition-all hover-lift ${
-              activeSection === section 
-                ? 'bg-romantic shadow-lg' 
-                : 'bg-white/30 hover:bg-white/50'
-            }`}
-            title={section.charAt(0).toUpperCase() + section.slice(1)}
-          />
-        ))}
       </div>
 
       {/* Main Content */}

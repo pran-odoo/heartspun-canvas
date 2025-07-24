@@ -14,7 +14,6 @@ import { VoiceNavigation } from '@/components/VoiceNavigation';
 import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
 import { ReactBitsLightning } from '@/components/ReactBitsLightning';
-import { DynamicCursor } from '@/components/DynamicCursor';
 import { MemoryEditModal } from '@/components/MemoryEditModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Edit, Heart, MapPin, Calendar } from 'lucide-react';
@@ -239,8 +238,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
-      {/* Dynamic Cursor - Global */}
-      <DynamicCursor />
+      {/* Emergency cursor now handled by CSS */}
 
       {/* The HeroSection now includes its own AkshitaDynamicBackground */}
       {/* Keep Enhanced3DEffects for other sections if needed */}

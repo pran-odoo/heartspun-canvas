@@ -46,15 +46,15 @@ interface ElectricParticle {
   opacity: number;
 }
 
-// EXACT REACTBITS LIGHTNING COLORS
+// EXACT REACTBITS LIGHTNING COLORS - Enhanced for visibility
 const LIGHTNING_COLORS = {
-  primary: '#00d4ff',
-  secondary: '#0099cc', 
-  accent: '#66e5ff',
-  core: '#ffffff',
-  glow: '#00aadd',
-  particle: '#4dd0e7',
-  background: '#0a0a0a'
+  primary: '#8B5CF6',      // Purple like ReactBits demo
+  secondary: '#A855F7',    // Lighter purple
+  accent: '#C084FC',       // Even lighter purple
+  core: '#FFFFFF',         // White core
+  glow: '#9333EA',         // Purple glow
+  particle: '#DDD6FE',     // Light purple particles
+  background: '#0f0a1a'    // Very dark purple background
 };
 
 export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
@@ -71,40 +71,40 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
   const [lightningBolts, setLightningBolts] = useState<LightningBolt[]>([]);
   const [particles, setParticles] = useState<ElectricParticle[]>([]);
 
-  // Lightning generation parameters based on intensity
+  // Lightning generation parameters based on intensity - ENHANCED for visibility
   const getIntensitySettings = () => {
     switch (intensity) {
       case 'low':
         return { 
-          boltFrequency: 0.002, 
-          maxBolts: 1, 
-          particleCount: 8,
-          minThickness: 1,
-          maxThickness: 3
+          boltFrequency: 0.015,   // Much more frequent
+          maxBolts: 3, 
+          particleCount: 20,
+          minThickness: 3,
+          maxThickness: 6
         };
       case 'medium':
         return { 
-          boltFrequency: 0.004, 
-          maxBolts: 2, 
-          particleCount: 15,
-          minThickness: 2,
-          maxThickness: 5
+          boltFrequency: 0.025,   // Very frequent
+          maxBolts: 5, 
+          particleCount: 35,
+          minThickness: 4,
+          maxThickness: 8
         };
       case 'high':
         return { 
-          boltFrequency: 0.007, 
-          maxBolts: 3, 
-          particleCount: 25,
-          minThickness: 3,
-          maxThickness: 7
+          boltFrequency: 0.035,   // Extremely frequent
+          maxBolts: 7, 
+          particleCount: 50,
+          minThickness: 5,
+          maxThickness: 12
         };
       default:
         return { 
-          boltFrequency: 0.004, 
-          maxBolts: 2, 
-          particleCount: 15,
-          minThickness: 2,
-          maxThickness: 5
+          boltFrequency: 0.025, 
+          maxBolts: 5, 
+          particleCount: 35,
+          minThickness: 4,
+          maxThickness: 8
         };
     }
   };
@@ -260,12 +260,12 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
     const alpha = (bolt.life / bolt.maxLife) * bolt.opacity;
     const progressSegments = Math.floor(bolt.animationProgress * bolt.segments.length);
     
-    // Outer glow
+    // Outer glow - ENHANCED for visibility
     ctx.shadowColor = bolt.color;
-    ctx.shadowBlur = 25;
-    ctx.globalAlpha = alpha * 0.4;
+    ctx.shadowBlur = 40;
+    ctx.globalAlpha = alpha * 0.8;
     ctx.strokeStyle = bolt.color;
-    ctx.lineWidth = bolt.thickness * 4;
+    ctx.lineWidth = bolt.thickness * 6;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
@@ -278,11 +278,11 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
     }
     ctx.stroke();
     
-    // Inner bright core
-    ctx.shadowBlur = 8;
-    ctx.globalAlpha = alpha * 0.9;
+    // Inner bright core - ENHANCED
+    ctx.shadowBlur = 15;
+    ctx.globalAlpha = alpha * 1.0;
     ctx.strokeStyle = LIGHTNING_COLORS.core;
-    ctx.lineWidth = bolt.thickness;
+    ctx.lineWidth = bolt.thickness * 2;
     
     ctx.beginPath();
     ctx.moveTo(bolt.segments[0].x, bolt.segments[0].y);
@@ -376,8 +376,14 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
     timeRef.current += 16;
     const settings = getIntensitySettings();
 
-    // Clear canvas with dark background
-    ctx.fillStyle = LIGHTNING_COLORS.background;
+    // Clear canvas with enhanced dark background
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, LIGHTNING_COLORS.background);
+    gradient.addColorStop(0.3, '#1a0d2e');
+    gradient.addColorStop(0.7, '#2d1b4e');
+    gradient.addColorStop(1, LIGHTNING_COLORS.background);
+    
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Generate new lightning bolts
@@ -495,13 +501,13 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
         contain: 'layout style paint'
       }}
     >
-      {/* Dark gradient background */}
+      {/* Enhanced dark purple gradient background */}
       <motion.div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse at center, #001122 0%, #000000 70%),
-            linear-gradient(135deg, #000000 0%, #001133 100%)
+            radial-gradient(ellipse at center, #2d1b4e 0%, #0f0a1a 70%),
+            linear-gradient(135deg, #1a0d2e 0%, #2d1b4e 50%, #0f0a1a 100%)
           `
         }}
       />
@@ -524,21 +530,22 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
         </div>
       )}
 
-      {/* Atmospheric overlay for depth */}
+      {/* Enhanced atmospheric overlay for depth */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: `
-            radial-gradient(ellipse at top, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(ellipse at bottom, rgba(0, 170, 221, 0.05) 0%, transparent 50%)
+            radial-gradient(ellipse at top, rgba(139, 92, 246, 0.2) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at center, rgba(147, 51, 234, 0.1) 0%, transparent 70%)
           `,
           mixBlendMode: 'soft-light'
         }}
         animate={{
-          opacity: [0.3, 0.8, 0.3],
+          opacity: [0.4, 0.9, 0.4],
         }}
         transition={{
-          duration: 6,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut"
         }}

@@ -15,6 +15,8 @@ import { VoiceNavigation } from '@/components/VoiceNavigation';
 import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
 import { ReactBitsLightning } from '@/components/ReactBitsLightning';
+import { ImprovedGalaxy } from '@/components/ImprovedGalaxy';
+import { ImprovedLightning } from '@/components/ImprovedLightning';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Index = () => {
@@ -195,10 +197,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
-      {/* Emergency cursor now handled by CSS */}
+      {/* Improved Galaxy Background - Layer 0 */}
+      <ImprovedGalaxy
+        theme={currentTheme}
+        mousePosition={mousePosition}
+        isActive={effectsEnabled}
+        className="z-0"
+      />
 
-      {/* The HeroSection now includes its own AkshitaDynamicBackground */}
-      {/* Keep Enhanced3DEffects for other sections if needed */}
+      {/* Enhanced 3D Effects - Layer 1 */}
       <Enhanced3DEffects
         theme={currentTheme}
         mousePosition={mousePosition}
@@ -207,27 +214,35 @@ const Index = () => {
         biometricData={biometricData}
       />
 
-      {/* Original Particle System (Fallback) for non-hero sections */}
+      {/* Particle System Fallback - Layer 2 */}
       <ParticleSystem
         theme={currentTheme}
         mousePosition={mousePosition}
         isActive={effectsEnabled && !window.WebGLRenderingContext}
       />
       
-      {/* Cursor Effects */}
+             {/* Cursor Effects - Layer 5 */}
       <CursorEffects
         theme={currentTheme}
         isActive={effectsEnabled}
       />
       
-      {/* Revolutionary Floating Navigation */}
+      {/* Improved Lightning - Layer 15 */}
+      <ImprovedLightning
+        intensity="medium"
+        color="romantic"
+        isActive={currentTheme === 'evening' || currentTheme === 'night'}
+        className="z-15"
+      />
+      
+      {/* Floating Navigation - Layer 40 */}
       <FloatingNavigation
         onNavigate={handleNavigation}
         currentSection={activeSection}
         mousePosition={mousePosition}
       />
       
-      {/* AI Companion Chatbot */}
+      {/* AI Companion Chatbot - Layer 50 */}
       <AICompanion
         theme={currentTheme}
         userName="Beautiful"

@@ -3,6 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom z-index layers for proper layering */
+.z-15 { z-index: 15; }
+.z-40 { z-index: 40; }
+.z-50 { z-index: 50; }
+
 /* COMPREHENSIVE BLUR ELIMINATION SYSTEM */
 /* Target only problematic elements that can accumulate blur */
 body, html, #root {

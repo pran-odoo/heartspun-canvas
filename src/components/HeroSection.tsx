@@ -65,12 +65,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   const [isSpotifyOpen, setIsSpotifyOpen] = useState(false);
   const [effectsEnabled, setEffectsEnabled] = useState(true);
   const [buttonClicked, setButtonClicked] = useState<string | null>(null);
+  const [buttonsEnabled, setButtonsEnabled] = useState(true);
 
-  // Enhanced button click handler with feedback
+  // Enhanced button click handler with feedback and proper state management
   const handleButtonClick = useCallback((buttonType: string, action: () => void) => {
     try {
+      // Prevent rapid clicks and check if buttons are enabled
+      if (buttonClicked || !buttonsEnabled) return;
+      
       // Visual feedback
       setButtonClicked(buttonType);
+      
+      // Temporarily disable buttons to prevent double clicks
+      setButtonsEnabled(false);
       
       // Haptic feedback (if supported)
       if (navigator.vibrate) {
@@ -80,14 +87,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
       // Execute action
       action();
       
-      // Reset visual feedback
-      setTimeout(() => setButtonClicked(null), 200);
+      // Reset visual feedback and re-enable buttons
+      setTimeout(() => {
+        setButtonClicked(null);
+        setButtonsEnabled(true);
+      }, 500);
     } catch (error) {
-      console.error('Button action failed:', error);
-      // Fallback action - scroll to top
+      // Graceful error handling - always re-enable buttons
+      setButtonClicked(null);
+      setButtonsEnabled(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, []);
+  }, [buttonClicked, buttonsEnabled]);
 
   // Safe navigation function
   const safeNavigate = useCallback((target: string) => {
@@ -305,16 +316,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Sophisticated Galaxy Background System */}
-      <StunningLivingGalaxy
-        theme={theme}
-        isDarkMode={isDarkMode}
-        mousePosition={mousePosition}
-        isActive={true}
-      />
-
-      {/* Main Content Container */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden z-10">
+      {/* Main Content Container - Galaxy background now handled by parent */}
       <motion.div
         className="relative z-30 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto"
         variants={containerVariants}

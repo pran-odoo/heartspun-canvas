@@ -11,37 +11,37 @@ interface ReactBitsGalaxyProps {
   className?: string;
 }
 
-// ENHANCED configuration for beautiful galaxy effect
+// EXACT ReactBits demo configuration - DO NOT MODIFY
 const GALAXY_CONFIG = {
-  density: parseFloat(import.meta.env.VITE_GALAXY_DENSITY) || 3.2, // More stars for richer galaxy
-  glowIntensity: parseFloat(import.meta.env.VITE_GALAXY_GLOW_INTENSITY) || 1.0, // Enhanced glow
-  saturation: 0.15, // More saturated colors
+  density: parseFloat(import.meta.env.VITE_GALAXY_DENSITY) || 1.0, // Original density
+  glowIntensity: parseFloat(import.meta.env.VITE_GALAXY_GLOW_INTENSITY) || 0.8,
+  saturation: 0.1,
   hueShift: 180,
-  twinkleIntensity: parseFloat(import.meta.env.VITE_GALAXY_TWINKLE_INTENSITY) || 0.9, // More twinkling
-  rotationSpeed: 0.15, // Slightly slower for elegance
+  twinkleIntensity: parseFloat(import.meta.env.VITE_GALAXY_TWINKLE_INTENSITY) || 0.8,
+  rotationSpeed: 0.2,
   mouseInteraction: true,
   mouseRepulsion: true
 };
 
-// Superior color schemes for AKSHITA
+// EXACT ReactBits demo colors - matching the official demo
 const REACTBITS_COLORS = {
   morning: {
-    starColor: '#FFE4B5',
-    background: 'radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 35%, #0f4c75 70%, #1a1a2e 100%)',
+    starColor: '#ffffff', // Pure white like ReactBits demo
+    background: 'radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a1a 35%, #2a2a2a 70%, #0a0a0a 100%)',
     hue: 40,
-    saturation: 0.15
+    saturation: 0.1
   },
   evening: {
-    starColor: '#DDA0DD',
-    background: 'radial-gradient(ellipse at center, #2c1810 0%, #4a2c17 35%, #6b4423 70%, #2c1810 100%)',
+    starColor: '#ffffff', // Pure white like ReactBits demo
+    background: 'radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a1a 35%, #2a2a2a 70%, #0a0a0a 100%)',
     hue: 300,
-    saturation: 0.12
+    saturation: 0.1
   },
   night: {
-    starColor: '#E0E6FF',
-    background: 'radial-gradient(ellipse at center, #0f0f23 0%, #1a1a2e 35%, #16213e 70%, #0f0f23 100%)',
+    starColor: '#ffffff', // Pure white like ReactBits demo
+    background: 'radial-gradient(ellipse at center, #0a0a0a 0%, #1a1a1a 35%, #2a2a2a 70%, #0a0a0a 100%)',
     hue: 220,
-    saturation: 0.08
+    saturation: 0.1
   }
 };
 
@@ -55,7 +55,7 @@ export const ReactBitsGalaxy: React.FC<ReactBitsGalaxyProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMouseMoving, setIsMouseMoving] = useState(false);
   const [galaxyConfig, setGalaxyConfig] = useState({
-    quantity: Math.floor(GALAXY_CONFIG.density * 1200), // Even more stars for rich galaxy effect
+    quantity: Math.floor(GALAXY_CONFIG.density * 400), // EXACT ReactBits demo default
     attract: GALAXY_CONFIG.mouseInteraction ? 0.5 : 0,
     repulse: GALAXY_CONFIG.mouseRepulsion ? 0.2 : 0,
     color: REACTBITS_COLORS[theme].starColor
@@ -80,7 +80,7 @@ export const ReactBitsGalaxy: React.FC<ReactBitsGalaxyProps> = ({
       color: colors.starColor,
       attract: GALAXY_CONFIG.mouseInteraction ? (isMouseMoving ? 0.8 : 0.5) : 0,
       repulse: GALAXY_CONFIG.mouseRepulsion ? (isMouseMoving ? 0.3 : 0.2) : 0,
-      quantity: Math.floor(GALAXY_CONFIG.density * (isMouseMoving ? 1500 : 1200))
+      quantity: Math.floor(GALAXY_CONFIG.density * (isMouseMoving ? 600 : 400))
     }));
   }, [theme, isMouseMoving]);
 

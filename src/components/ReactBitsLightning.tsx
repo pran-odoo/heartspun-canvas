@@ -494,7 +494,7 @@ export const ReactBitsLightning: React.FC<ReactBitsLightningProps> = ({
 
   return (
     <div 
-      className={`fixed inset-0 z-0 overflow-hidden lightning-section ${className}`}
+      className={`fixed inset-0 z-15 overflow-hidden lightning-section ${className}`}
       data-background="dark"
       style={{ 
         isolation: 'isolate',

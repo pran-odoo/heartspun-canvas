@@ -15,8 +15,8 @@ import { VoiceNavigation } from '@/components/VoiceNavigation';
 import { TargetCursor } from '@/components/TargetCursor';
 import { SurpriseGenerator } from '@/components/SurpriseGenerator';
 import { ReactBitsLightning } from '@/components/ReactBitsLightning';
-import { ImprovedGalaxy } from '@/components/ImprovedGalaxy';
-import { ImprovedLightning } from '@/components/ImprovedLightning';
+import { ReactBitsGalaxy } from '@/components/ReactBitsGalaxy';
+// Using original ReactBitsLightning which looks better
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Index = () => {
@@ -197,8 +197,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden theme-transition gpu-accelerated">
-      {/* Improved Galaxy Background - Layer 0 */}
-      <ImprovedGalaxy
+      {/* Original Galaxy Background - Layer 0 (keeping the beautiful original) */}
+      <ReactBitsGalaxy
         theme={currentTheme}
         mousePosition={mousePosition}
         isActive={effectsEnabled}
@@ -227,13 +227,13 @@ const Index = () => {
         isActive={effectsEnabled}
       />
       
-      {/* Improved Lightning - Layer 15 */}
-      <ImprovedLightning
-        intensity="medium"
-        color="romantic"
-        isActive={currentTheme === 'evening' || currentTheme === 'night'}
-        className="z-15"
-      />
+             {/* ReactBits Lightning - Layer 15 */}
+       <ReactBitsLightning
+         intensity="medium"
+         color="#DDA0DD"
+         isActive={currentTheme === 'evening' || currentTheme === 'night'}
+         className="z-15"
+       />
       
       {/* Floating Navigation - Layer 40 */}
       <FloatingNavigation

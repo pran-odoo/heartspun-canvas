@@ -11,14 +11,14 @@ interface ReactBitsGalaxyProps {
   className?: string;
 }
 
-// EXACT configuration matching ReactBits demo with environment variable support
+// ENHANCED configuration for beautiful galaxy effect
 const GALAXY_CONFIG = {
-  density: parseFloat(import.meta.env.VITE_GALAXY_DENSITY) || 2.4,
-  glowIntensity: parseFloat(import.meta.env.VITE_GALAXY_GLOW_INTENSITY) || 0.8,
-  saturation: 0.1,
+  density: parseFloat(import.meta.env.VITE_GALAXY_DENSITY) || 3.2, // More stars for richer galaxy
+  glowIntensity: parseFloat(import.meta.env.VITE_GALAXY_GLOW_INTENSITY) || 1.0, // Enhanced glow
+  saturation: 0.15, // More saturated colors
   hueShift: 180,
-  twinkleIntensity: parseFloat(import.meta.env.VITE_GALAXY_TWINKLE_INTENSITY) || 0.8,
-  rotationSpeed: 0.2,
+  twinkleIntensity: parseFloat(import.meta.env.VITE_GALAXY_TWINKLE_INTENSITY) || 0.9, // More twinkling
+  rotationSpeed: 0.15, // Slightly slower for elegance
   mouseInteraction: true,
   mouseRepulsion: true
 };
@@ -55,7 +55,7 @@ export const ReactBitsGalaxy: React.FC<ReactBitsGalaxyProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMouseMoving, setIsMouseMoving] = useState(false);
   const [galaxyConfig, setGalaxyConfig] = useState({
-    quantity: Math.floor(GALAXY_CONFIG.density * 800), // Higher star density
+    quantity: Math.floor(GALAXY_CONFIG.density * 1200), // Even more stars for rich galaxy effect
     attract: GALAXY_CONFIG.mouseInteraction ? 0.5 : 0,
     repulse: GALAXY_CONFIG.mouseRepulsion ? 0.2 : 0,
     color: REACTBITS_COLORS[theme].starColor
@@ -80,7 +80,7 @@ export const ReactBitsGalaxy: React.FC<ReactBitsGalaxyProps> = ({
       color: colors.starColor,
       attract: GALAXY_CONFIG.mouseInteraction ? (isMouseMoving ? 0.8 : 0.5) : 0,
       repulse: GALAXY_CONFIG.mouseRepulsion ? (isMouseMoving ? 0.3 : 0.2) : 0,
-      quantity: Math.floor(GALAXY_CONFIG.density * (isMouseMoving ? 1000 : 800))
+      quantity: Math.floor(GALAXY_CONFIG.density * (isMouseMoving ? 1500 : 1200))
     }));
   }, [theme, isMouseMoving]);
 

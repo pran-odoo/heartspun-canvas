@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { StunningLivingGalaxy } from './StunningLivingGalaxy';
+// Galaxy background now handled at page level
 import { SophisticatedText, ElegantTitle, LuxuryParagraph, SophisticatedQuote } from './SophisticatedTypography';
 import { AkshitaMagicalButton, AkshitaFloatingButton } from './AkshitaMagicalButtons';
 import { TargetCursor } from './TargetCursor';

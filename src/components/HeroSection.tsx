@@ -122,7 +122,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
 
       recognitionInstance.onstart = () => {
         setIsListening(true);
-        console.log('Voice recognition started');
+        // Voice recognition started
       };
 
       recognitionInstance.onresult = (event: any) => {
@@ -132,13 +132,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
       };
 
       recognitionInstance.onerror = (event: any) => {
-        console.error('Voice recognition error:', event.error);
+        // Voice recognition error handled gracefully
         setIsListening(false);
       };
 
       recognitionInstance.onend = () => {
         setIsListening(false);
-        console.log('Voice recognition ended');
+        // Voice recognition ended
       };
 
       setRecognition(recognitionInstance);
@@ -147,7 +147,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
 
   // Handle voice commands
   const handleVoiceCommand = useCallback((command: string) => {
-    console.log('Voice command received:', command);
     
     if (command.includes('memories') || command.includes('photos')) {
       onNavigate('memories');
@@ -177,7 +176,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ theme, onNavigate }) =
         alert('Speech recognition not supported in this browser. Please use Chrome or Edge.');
       }
     } catch (error) {
-      console.error('Voice activation failed:', error);
+      // Voice activation failed - gracefully handled
     }
   }, [recognition, isListening]);
 

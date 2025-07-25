@@ -118,8 +118,6 @@ const Index = () => {
 
   // Enhanced navigation handler with React Router
   const handleNavigation = (section: string) => {
-    console.log('Navigating to:', section);
-    
     // Map sections to routes
     const routeMap: { [key: string]: string } = {
       'memories': '/memories',
@@ -134,7 +132,6 @@ const Index = () => {
     
     const route = routeMap[section];
     if (route) {
-      console.log('Navigating to route:', route);
       navigate(route);
     } else {
       // Fallback to scroll within page for sections that don't have dedicated routes

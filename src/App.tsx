@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AnimatePresence } from "framer-motion";
 import { TabSwitchingFix } from "./components/TabSwitchingFix";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Index from "./pages/Index";
 import Memories from "./pages/Memories";
 import Music from "./pages/Music";
@@ -40,25 +41,27 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <TooltipProvider>
-        <TabSwitchingFix />
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <NavigationProvider>
-            <AnimatedRoutes />
-          </NavigationProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <TooltipProvider>
+          <TabSwitchingFix />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <NavigationProvider>
+              <AnimatedRoutes />
+            </NavigationProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

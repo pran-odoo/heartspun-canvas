@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageTransition } from '@/components/PageTransition';
 import { Music2, Play, Pause, SkipForward, SkipBack, Heart, List, Volume2, Repeat, Shuffle } from 'lucide-react';
@@ -150,7 +150,8 @@ const Music: React.FC = () => {
           const newTime = prev + 1;
           // Simulate song ending
           if (newTime >= parseDuration(currentSong.duration)) {
-            handleNext();
+            // Use setTimeout to avoid state update during render
+            setTimeout(() => handleNext(), 0);
             return 0;
           }
           return newTime;
@@ -159,7 +160,7 @@ const Music: React.FC = () => {
 
       return () => clearInterval(interval);
     }
-  }, [isPlaying, currentSong]);
+  }, [isPlaying, currentSong, handleNext]);
 
   const parseDuration = (duration: string) => {
     const [minutes, seconds] = duration.split(':').map(Number);
@@ -176,7 +177,7 @@ const Music: React.FC = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!currentPlaylist || !currentSong) return;
     
     const currentIndex = currentPlaylist.songs.findIndex(song => song.id === currentSong.id);
@@ -190,7 +191,7 @@ const Music: React.FC = () => {
     
     setCurrentSong(currentPlaylist.songs[nextIndex]);
     setCurrentTime(0);
-  };
+  }, [currentPlaylist, currentSong, isShuffle]);
 
   const handlePrevious = () => {
     if (!currentPlaylist || !currentSong) return;
